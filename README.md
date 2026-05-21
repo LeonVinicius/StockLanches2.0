@@ -1,15 +1,14 @@
-# 🍔 StockLanches - Gestão de Estoque Inteligente
+# 🍔 StockLanches 2.0 - Gestão de Estoque Inteligente com Microsserviços
 
-> **Status do Projeto:** Concluído / Em expansão 🚀
+> **Status do Projeto:** 🚧 **Em desenvolvimento** - Versão 2.0 em andamento (ambiente local)
 
-O **StockLanches** nasceu de uma necessidade real identificada em uma lanchonete local em Osasco/SP. O estabelecimento utilizava processos manuais (papel e caneta) para o controle de insumos. Este sistema foi desenvolvido para digitalizar essa operação, permitindo um controle de estoque online, rastreável e eficiente.
+O **StockLanches 2.0** é a evolução do sistema original de controle de estoque, agora migrando para uma **arquitetura baseada em microsserviços**. O projeto nasceu de uma necessidade real identificada em uma lanchonete local em Osasco/SP, e esta nova versão traz mais robustez e recursos avançados para gerenciamento de estoque em ambiente local.
 
 ---
 
-## 📸 Demonstração Visual
+## 📸 Demonstração Visual (Versão 1.0)
 
-Confira abaixo as principais telas do sistema (Autenticação, Gestão de Produtos e Auditoria):
-
+Confira abaixo as principais telas do sistema original (Autenticação, Gestão de Produtos e Auditoria):
 
 <p align="center">
   <img 
@@ -33,6 +32,52 @@ Confira abaixo as principais telas do sistema (Autenticação, Gestão de Produt
   />
 </p>
 
+---
+
+## 🚀 Novidades da Versão 2.0 (Em Desenvolvimento)
+
+A nova versão está sendo construída com arquitetura de microsserviços, trazendo:
+
+- 🔐 **Microsserviço de Autenticação (Login)** - Isolado e seguro
+- 📨 **Microsserviço de Mensageria** - Comunicação assíncrona entre serviços
+- 🤖 **Microsserviço de Captcha** - Proteção contra bots
+- 🔄 **Integração com PDV** - Baixa automática em tempo real no estoque
+- 📏 **Suporte a Múltiplas Unidades de Medida** - Kg, litros, unidades, etc.
+
+### 🎯 Próximos Passos do Desenvolvimento
+
+- [ ] Finalizar integração entre microsserviços
+- [ ] Implementar filas RabbitMQ/Kafka para mensageria
+- [ ] Testes de carga e performance
+- [ ] Documentação da API (Swagger/OpenAPI)
+
+---
+
+## ✨ Funcionalidades (Versão 1.0 - Estável)
+
+- **Autenticação:** Login seguro integrado ao banco de dados MySQL.
+- **Gestão de Produtos (CRUD):** Cadastro, edição, consulta e exclusão de itens.
+- **Monitoramento de Nível Crítico:** Alertas visuais automáticos (Normal, Baixo, Esgotado).
+- **Histórico de Movimentações:** Log de auditoria que registra o tipo de ação, produto, quantidade e o usuário responsável.
+- **Filtros Avançados:** Busca dinâmica por nome, categoria e ordenação.
+
+---
+
+## 🛠️ Tecnologias
+
+### Versão 1.0 (Estável)
+- **Linguagem:** Java 21
+- **Framework:** Spring Boot 3
+- **Persistência:** Spring Data JPA / Hibernate
+- **Banco de Dados:** MySQL 8.0 (local)
+- **Interface:** Thymeleaf & CSS3
+
+### Versão 2.0 (Em desenvolvimento)
+- **Arquitetura:** Microsserviços com Spring Boot
+- **Comunicação:** REST APIs + Mensageria (RabbitMQ/Kafka)
+- **Descoberta de serviços:** Spring Cloud Netflix Eureka (previsto)
+- **API Gateway:** Spring Cloud Gateway (previsto)
+- **Ambiente:** Local (sem cloud/containers por enquanto)
 
 ---
 
@@ -44,38 +89,21 @@ Para ver o sistema em funcionamento e entender o contexto real da solução, ass
 
 ---
 
-## ✨ Funcionalidades
+## 🎯 Contexto do Projeto
 
-- **Autenticação:** Login seguro integrado ao banco de dados MySQL.
-- **Gestão de Produtos (CRUD):** Cadastro, edição, consulta e exclusão de itens.
-- **Monitoramento de Nível Crítico:** Alertas visuais automáticos (Normal, Baixo, Esgotado).
-- **Histórico de Movimentações:** Log de auditoria que registra o tipo de ação, produto, quantidade e o usuário responsável.
-- **Filtros Avançados:** Busca dinâmica por nome, categoria e ordenação.
+Este sistema faz parte de um **trabalho extensionista** com os integrantes:
+- Eduardo Amorim Ramos
+- Leon Vinicius
+- Ricardo Frazão
 
----
-
-## 🛠️ Tecnologias Utilizadas
-
-- **Linguagem:** Java 21
-- **Framework:** Spring Boot 3
-- **Persistência:** Spring Data JPA / Hibernate
-- **Banco de Dados:** MySQL 8.0
-- **Interface:** Thymeleaf & CSS3
+**Comunidade atendida:** Pequenos empreendimentos formais (MEI, ME)  
+**ODS:** 8 - Trabalho Decente e Crescimento Econômico
 
 ---
 
-## 🎯 Liderança e Desenvolvimento
+## 🚀 Como executar o projeto (Local)
 
-Embora este projeto faça parte de um trabalho extensionista, assumi a **liderança técnica total**, sendo responsável por:
-1. **Modelagem de Dados:** Criação do esquema MySQL e integração via JPA.
-2. **Arquitetura MVC:** Separação clara entre Model, Repository, Service e Controller.
-3. **Persistência Real:** Migração de dados em memória para banco de dados persistente.
-4. **Segurança:** Tratamento de credenciais e variáveis de ambiente.
-
----
-
-## 🚀 Como executar o projeto
-
+### Versão 1.0 (Estável)
 1. **Configuração do Banco:**
    - Crie o banco: `CREATE DATABASE stocklanches;`
    - Configure o `DB_USER` e `DB_PASSWORD` no seu ambiente ou no `application.properties`.
@@ -85,13 +113,13 @@ Embora este projeto faça parte de um trabalho extensionista, assumi a **lideran
    - Execute a classe `DemoApplication.java`.
    - Acesse: `http://localhost:8080`
 
----
+### Versão 2.0 (Em desenvolvimento)
+```bash
+# Clone o repositório
+git clone https://github.com/LeonVinicius/StockLanches2.0.git
+cd StockLanches2.0
 
-## 👤 Autor
-
-**Leon Vinicius**
-- [LinkedIn](https://www.linkedin.com/in/leon-vinicius-398246258/)
-- [GitHub](https://github.com/LeonVinicius)
-
----
-*Este projeto transformou um processo analógico em digital, otimizando o tempo e a gestão de um pequeno negócio.*
+# Execute cada microsserviço individualmente (em desenvolvimento)
+# Exemplo:
+cd auth-service
+mvn spring-boot:run
