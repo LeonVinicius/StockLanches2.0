@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estatísticas - StockLanches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/estilo-clean.css}">
+</head>
+<body>
+
+    <div class="dashboard-layout">
+
+<aside class="sidebar">
+    <div>
+        <!-- Logo -->
+        <div class="logo-container">
+            <i class="fas fa-burger logo-icon" style="width:34px;height:34px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;"></i>
+            <div class="logo-text">
+                <h1>StockLanches</h1>
+                <p>SaaS v3.0</p>
+            </div>
+        </div>
+ 
+        <!-- User -->
+        <div class="user-profile-card">
+            <p class="user-profile-label">Usuário Logado</p>
+            <p class="user-profile-email" th:text="${emailUsuario}">email@exemplo.com</p>
+        </div>
+ 
+        <!-- Nav -->
+        <nav class="menu-nav">
+            <span class="menu-label">Operacional</span>
+ 
+            <a th:href="@{/pdv}" class="menu-item"
+               th:classappend="${activePage == 'pdv'} ? 'active'">
+                <i class="fas fa-desktop"></i> PDV
+            </a>
+ 
+            <a th:href="@{/consultar}" class="menu-item"
+               th:classappend="${activePage == 'estoque'} ? 'active'">
+                <i class="fas fa-boxes-stacked"></i> Estoque
+            </a>
+ 
+            <a th:href="@{/produtos}" class="menu-item"
+               th:classappend="${activePage == 'produtos'} ? 'active'">
+                <i class="fas fa-burger"></i> Produtos
+            </a>
+ 
+            <span class="menu-label">Gestão</span>
+ 
+            <a th:href="@{/estatisticas}" class="menu-item"
+               th:classappend="${activePage == 'home'} ? 'active'">
+                <i class="fas fa-chart-line"></i> Estatísticas
+            </a>
+ 
+            <a th:href="@{/historico}" class="menu-item"
+               th:classappend="${activePage == 'historico'} ? 'active'">
+                <i class="fas fa-history"></i> Histórico
+            </a>
+ 
+            <a th:href="@{/configuracoes}" class="menu-item"
+               th:classappend="${activePage == 'configuracoes'} ? 'active'">
+                <i class="fas fa-cog"></i> Ajustes
+            </a>
+        </nav>
+    </div>
+ 
+    <div>
+        <a th:href="@{/logout}" class="menu-item btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </a>
+    </div>
+</aside>
+
+        <main class="main-content" style="overflow-y: auto; flex: 1;">
+            
+            <header style="margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+                <h1>Estatísticas do Sistema</h1>
+            </header>
+
+            <div class="content-box" style="margin-bottom: 25px; padding: 1rem 1.5rem;">
+                <form method="GET" th:action="@{/estatisticas}" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.95rem;">
+                        <i class="fas fa-filter style-color" style="color: var(--accent-blue);"></i>
+                        <span>Filtros de Período</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="date" name="dataInicio" style="max-width: 160px; padding: 6px 12px;">
+                            <span style="color: var(--text-secondary); font-size: 0.85rem;">até</span>
+                            <input type="date" name="dataFim" style="max-width: 160px; padding: 6px 12px;">
+                        </div>
+                        <button type="submit" class="btn-submit" style="padding: 8px 20px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="form-row" style="grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 25px;">
+                <div class="content-box" style="padding: 20px; min-height: 120px; display: flex; flex-direction: column; justify-content: center;">
+                    <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; display: block; margin-bottom: 5px;">Total Produtos</span>
+                    <h2 style="font-size: 2.25rem; font-weight: 700;" th:text="${totalProdutos}">3</h2>
+                </div>
+
+                <div class="content-box" style="padding: 20px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; background-color: #fff5f5; border-color: #fed7d7;">
+                    <span style="font-size: 0.85rem; color: var(--accent-red); font-weight: 600; display: block; margin-bottom: 5px;">Estoque Crítico</span>
+                    <h2 style="font-size: 2.25rem; font-weight: 700; color: var(--accent-red);" th:text="${produtosBaixoEstoque}">2</h2>
+                </div>
+
+                <div class="content-box" style="padding: 20px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; background-color: #f0fdf4; border-color: #bbf7d0;">
+                    <span style="font-size: 0.85rem; color: var(--accent-green); font-weight: 600; display: block; margin-bottom: 5px;">Faturamento Hoje</span>
+                    <h2 style="font-size: 2.25rem; font-weight: 700; color: var(--accent-green);" th:text="'R$ ' + ${faturamentoDiario}">R$ 145,00</h2>
+                </div>
+            </div>
+
+            <input type="hidden" id="data-lanches" th:value="${qtdLanches != null ? qtdLanches : 0}">
+            <input type="hidden" id="data-bebidas" th:value="${qtdBebidas != null ? qtdBebidas : 0}">
+            <input type="hidden" id="data-sobremesas" th:value="${qtdSobremesas != null ? qtdSobremesas : 0}">
+            <input type="hidden" id="data-acomp" th:value="${qtdAcomp != null ? qtdAcomp : 0}">
+
+            <div class="form-row" style="grid-template-columns: 1.2fr 1fr; gap: 20px;">
+                <div class="content-box" style="padding: 20px; display: flex; flex-direction: column; min-height: 320px;">
+                    <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 15px;">Receita Diária</h4>
+                    <div style="flex: 1; position: relative;"><canvas id="graficoBarras"></canvas></div>
+                </div>
+                <div class="content-box" style="padding: 20px; display: flex; flex-direction: column; min-height: 320px;">
+                    <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 15px;">Categorias Mais Consumidas</h4>
+                    <div style="flex: 1; position: relative;"><canvas id="graficoPizza"></canvas></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const lanches = document.getElementById('data-lanches').value;
+        const bebidas = document.getElementById('data-bebidas').value;
+        const sobremesas = document.getElementById('data-sobremesas').value;
+        const acomp = document.getElementById('data-acomp').value;
+
+        new Chart(document.getElementById('graficoBarras'), {
+            type: 'bar',
+            data: {
+                labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                datasets: [{ data: [350, 420, 380, 550, 700, 920, 680], backgroundColor: '#2563eb', borderRadius: 6 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        new Chart(document.getElementById('graficoPizza'), {
+            type: 'pie',
+            data: {
+                labels: ['Lanches', 'Bebidas', 'Sobremesas', 'Acompanhamentos'],
+                datasets: [{ data: [lanches, bebidas, sobremesas, acomp], backgroundColor: ['#2563eb', '#10b981', '#8b5cf6', '#f97316'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    </script>
+    
+<script>
+    (function () {
+        const saved = localStorage.getItem('sl-theme');
+        if (saved && saved !== 'light') {
+            document.documentElement.setAttribute('data-theme', saved);
+        }
+    })();
+</script>
+</body>
+</html>

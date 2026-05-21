@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponto de Venda - StockLanches</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/estilo-clean.css}">
+    <link rel="stylesheet" th:href="@{/css/pdv.css}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+   <aside class="sidebar">
+    <div>
+        <!-- Logo -->
+        <div class="logo-container">
+            <i class="fas fa-burger logo-icon" style="width:34px;height:34px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;"></i>
+            <div class="logo-text">
+                <h1>StockLanches</h1>
+                <p>SaaS v3.0</p>
+            </div>
+        </div>
+ 
+        <!-- User -->
+        <div class="user-profile-card">
+            <p class="user-profile-label">Usuário Logado</p>
+            <p class="user-profile-email" th:text="${emailUsuario}">email@exemplo.com</p>
+        </div>
+ 
+        <!-- Nav -->
+        <nav class="menu-nav">
+            <span class="menu-label">Operacional</span>
+ 
+            <a th:href="@{/pdv}" class="menu-item"
+               th:classappend="${activePage == 'pdv'} ? 'active'">
+                <i class="fas fa-desktop"></i> PDV
+            </a>
+ 
+            <a th:href="@{/consultar}" class="menu-item"
+               th:classappend="${activePage == 'estoque'} ? 'active'">
+                <i class="fas fa-boxes-stacked"></i> Estoque
+            </a>
+ 
+            <a th:href="@{/produtos}" class="menu-item"
+               th:classappend="${activePage == 'produtos'} ? 'active'">
+                <i class="fas fa-burger"></i> Produtos
+            </a>
+ 
+            <span class="menu-label">Gestão</span>
+ 
+            <a th:href="@{/estatisticas}" class="menu-item"
+               th:classappend="${activePage == 'home'} ? 'active'">
+                <i class="fas fa-chart-line"></i> Estatísticas
+            </a>
+ 
+            <a th:href="@{/historico}" class="menu-item"
+               th:classappend="${activePage == 'historico'} ? 'active'">
+                <i class="fas fa-history"></i> Histórico
+            </a>
+ 
+            <a th:href="@{/configuracoes}" class="menu-item"
+               th:classappend="${activePage == 'configuracoes'} ? 'active'">
+                <i class="fas fa-cog"></i> Ajustes
+            </a>
+        </nav>
+    </div>
+ 
+    <div>
+        <a th:href="@{/logout}" class="menu-item btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </a>
+    </div>
+</aside>
+
+    <main class="main-content">
+
+        <header>
+            <h1>Ponto de Venda</h1>
+            <p>Selecione os produtos para adicionar ao carrinho</p>
+        </header>
+
+        <div class="pdv-container">
+
+            <div class="pdv-catalog">
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <div style="position: relative;">
+                        <i class="fas fa-search" style="position:absolute;left:15px;top:12px;color:var(--text-muted);"></i>
+                        <input type="text" id="buscaProdutos" placeholder="Buscar produtos..." style="padding-left:40px;border-radius:12px;">
+                    </div>
+                </div>
+
+				<div class="category-pills">
+				    <button class="pill-btn active">Tudo</button>
+				    <!-- 🔥 CATEGORIAS DINÂMICAS VINDAS DO BANCO -->
+				    <button class="pill-btn" th:each="cat : ${categorias}" th:text="${cat.nome}"></button>
+				</div>
+
+                <div class="product-grid">
+
+                    <div th:each="p : ${produtos}"
+                         class="product-card"
+                         th:data-id="${p.id}"
+                         th:data-nome="${p.nome}"
+                         th:data-preco="${p.precoVenda != null ? p.precoVenda : 0.0}"
+                         th:data-categoria="${p.categoria != null ? p.categoria : 'Outros'}"
+                         onclick="acionarCarrinhoPorCard(this)">
+
+						<div class="product-img-placeholder">
+						    <img th:if="${p.imagemBase64 != null}" th:src="${p.imagemBase64}" style="width:100%; height:100%; object-fit:cover;">
+						    
+						    <th:block th:if="${p.imagemBase64 == null}">
+						        <i class="fas fa-burger" th:if="${p.categoria == 'Lanches'}"></i>
+						        <i class="fas fa-glass-water" th:if="${p.categoria == 'Bebidas'}"></i>
+						        <i class="fas fa-ice-cream" th:if="${p.categoria == 'Sobremesas'}"></i>
+						        <i class="fas fa-box" th:if="${p.categoria != 'Lanches' and p.categoria != 'Bebidas' and p.categoria != 'Sobremesas'}"></i>
+						    </th:block>
+						</div>
+
+                        <div class="product-info">
+                            <h3 th:text="${p.nome}">Produto</h3>
+                            <span class="category" th:text="${p.categoria != null ? p.categoria : 'Outros'}">Categoria</span>
+                            <div class="price" th:text="'R$ ' + ${#numbers.formatDecimal(p.precoVenda != null ? p.precoVenda : 0.0, 1, 'POINT', 2, 'COMMA')}">
+                                R$ 0,00
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(produtos)}"
+                         style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">
+                        Nenhum produto cadastrado no cardápio.
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="pdv-cart">
+
+                <div class="cart-header">
+                    <h3><i class="fas fa-shopping-bag"></i> Carrinho Atual</h3>
+                </div>
+
+                <div class="cart-client-area">
+                    <input type="text" id="clienteNome" placeholder="Cliente (Nome ou Celular)" style="width:100%;border:none;background:transparent;outline:none;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+                        <input type="checkbox" id="cpfNota">
+                        <label for="cpfNota">CPF na Nota</label>
+                    </div>
+                </div>
+
+                <div class="cart-items">
+                    <div class="cart-empty">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>
+                            Carrinho vazio<br>
+                            <span>Adicione produtos para iniciar</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="cart-footer">
+                    <div class="cart-totals">
+                        <span class="label">Subtotal:</span>
+                        <span class="value">R$ 0,00</span>
+                    </div>
+
+                    <div class="cart-totals">
+                        <span class="label">Total:</span>
+                        <span class="value">R$ 0,00</span>
+                    </div>
+
+                    <button class="btn-checkout" onclick="document.getElementById('modalPagamento').style.display='flex'">
+                        Fechar Pedido
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<div id="modalPagamento" class="modal-overlay-details">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>Finalizar Pagamento</h3>
+            <button class="btn-close-modal" onclick="document.getElementById('modalPagamento').style.display='none'">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="payment-summary">
+                <p>Total de itens: <strong id="modal-qtd-itens">0</strong></p>
+                <p>Cliente: <strong id="modal-cliente-nome">Consumidor Final</strong></p>
+                <div class="payment-total">
+                    <span>Total:</span>
+                    <strong id="modal-valor-total">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <p class="payment-title">Selecione a forma de pagamento:</p>
+
+            <div class="payment-option" onclick="selecionarPagamento(this, 'Dinheiro')">
+                <i class="fas fa-money-bill-wave"></i> Dinheiro
+            </div>
+            <div class="payment-option" onclick="selecionarPagamento(this, 'Cartão')">
+                <i class="far fa-credit-card"></i> Cartão
+            </div>
+            <div class="payment-option selected" onclick="selecionarPagamento(this, 'Pix')">
+                <i class="fab fa-pix"></i> Pix
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="document.getElementById('modalPagamento').style.display='none'">Cancelar</button>
+            <button class="btn-confirm" id="btn-confirmar-pagamento" onclick="finalizarCompra()">Confirmar Pagamento</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function acionarCarrinhoPorCard(elemento) {
+        const id = elemento.getAttribute('data-id');
+        const nome = elemento.getAttribute('data-nome');
+        const preco = elemento.getAttribute('data-preco');
+        
+        if (typeof adicionarAoCarrinho === "function") {
+            adicionarAoCarrinho(id, nome, preco);
+        } else {
+            console.error("Função adicionarAoCarrinho não foi carregada pelo pdv.js");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filtro de Busca por Texto
+        const inputBusca = document.getElementById('buscaProdutos');
+        if (inputBusca) {
+            inputBusca.addEventListener('input', function() {
+                filtrarProdutos(this.value, document.querySelector('.pill-btn.active').textContent.trim());
+            });
+        }
+
+        // Filtro por Abas de Categorias (Pills)
+        const botoesCategoria = document.querySelectorAll('.pill-btn');
+        botoesCategoria.forEach(botao => {
+            botao.addEventListener('click', function() {
+                botoesCategoria.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const termoBusca = inputBusca ? inputBusca.value : '';
+                filtrarProdutos(termoBusca, this.textContent.trim());
+            });
+        });
+    });
+
+    function filtrarProdutos(texto, categoria) {
+        const cards = document.querySelectorAll('.product-card');
+        cards.forEach(card => {
+            const nomeCard = card.getAttribute('data-nome').toLowerCase();
+            const catCard = card.getAttribute('data-categoria');
+            
+            const bateTexto = !texto || nomeCard.includes(texto.toLowerCase());
+            const bateCategoria = (categoria === 'Tudo') || (catCard.toLowerCase() === categoria.toLowerCase());
+
+            if (bateTexto && bateCategoria) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+
+<script th:src="@{/js/pdv.js}"></script>
+
+<script>
+    (function () {
+        const saved = localStorage.getItem('sl-theme');
+        if (saved && saved !== 'light') {
+            document.documentElement.setAttribute('data-theme', saved);
+        }
+    })();
+</script>
+</body>
+</html>

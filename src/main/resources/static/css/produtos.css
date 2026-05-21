@@ -1,0 +1,90 @@
+@charset "UTF-8";
+/* ==========================================================================
+   PRODUTOS.CSS - Grid de Cardápio e Ficha Técnica
+   ========================================================================== */
+
+/* 🔥 NOVAS CLASSES PARA O SCROLL - PASSO 2 */
+.dashboard-layout {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.main-content {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Trava a página principal */
+    padding: 25px;
+}
+
+/* 🔥 CARD-GRID MODIFICADO - PASSO 2 */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    flex: 1;
+    overflow-y: auto; /* 🔥 MÁGICA: Ativa a barra de rolagem apenas na área dos cards do cardápio! */
+    padding-bottom: 40px;
+}
+
+/* Mantenha o resto do seu CSS original abaixo */
+.product-item-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    transition: 0.2s;
+}
+
+.product-item-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+}
+
+.product-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.product-img {
+    width: 80px;
+    height: 80px;
+    background: var(--bg-main);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+}
+
+.product-title-price h4 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.product-title-price span { color: var(--accent-blue); font-weight: 700; }
+.category-pill { font-size: 0.7rem; background: var(--bg-main); padding: 2px 8px; border-radius: 4px; }
+
+.ficha-tecnica-area {
+    background: var(--bg-main);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.ficha-tecnica-area h5 { font-size: 0.7rem; text-transform: uppercase; margin-bottom: 5px; color: var(--text-muted); }
+
+.edit-btn {
+    width: 100%;
+    padding: 0.7rem;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.edit-btn:hover { background: var(--bg-hover); border-color: var(--accent-blue); }

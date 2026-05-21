@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - StockLanches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/estilo-clean.css}">
+    <link rel="stylesheet" th:href="@{/css/configuracoes.css}">
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════ -->
+<aside class="sidebar">
+    <div>
+        <!-- Logo -->
+        <div class="logo-container">
+            <i class="fas fa-burger logo-icon" style="width:34px;height:34px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;"></i>
+            <div class="logo-text">
+                <h1>StockLanches</h1>
+                <p>SaaS v3.0</p>
+            </div>
+        </div>
+ 
+        <!-- User -->
+        <div class="user-profile-card">
+            <p class="user-profile-label">Usuário Logado</p>
+            <p class="user-profile-email" th:text="${emailUsuario}">email@exemplo.com</p>
+        </div>
+ 
+        <!-- Nav -->
+        <nav class="menu-nav">
+            <span class="menu-label">Operacional</span>
+ 
+            <a th:href="@{/pdv}" class="menu-item"
+               th:classappend="${activePage == 'pdv'} ? 'active'">
+                <i class="fas fa-desktop"></i> PDV
+            </a>
+ 
+            <a th:href="@{/consultar}" class="menu-item"
+               th:classappend="${activePage == 'estoque'} ? 'active'">
+                <i class="fas fa-boxes-stacked"></i> Estoque
+            </a>
+ 
+            <a th:href="@{/produtos}" class="menu-item"
+               th:classappend="${activePage == 'produtos'} ? 'active'">
+                <i class="fas fa-burger"></i> Produtos
+            </a>
+ 
+            <span class="menu-label">Gestão</span>
+ 
+            <a th:href="@{/estatisticas}" class="menu-item"
+               th:classappend="${activePage == 'home'} ? 'active'">
+                <i class="fas fa-chart-line"></i> Estatísticas
+            </a>
+ 
+            <a th:href="@{/historico}" class="menu-item"
+               th:classappend="${activePage == 'historico'} ? 'active'">
+                <i class="fas fa-history"></i> Histórico
+            </a>
+ 
+            <a th:href="@{/configuracoes}" class="menu-item"
+               th:classappend="${activePage == 'configuracoes'} ? 'active'">
+                <i class="fas fa-cog"></i> Ajustes
+            </a>
+        </nav>
+    </div>
+ 
+    <div>
+        <a th:href="@{/logout}" class="menu-item btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </a>
+    </div>
+</aside>
+
+<!-- ══ MAIN ══════════════════════════════════════════════════════ -->
+<main class="main-content">
+
+    <!-- Top bar -->
+    <div class="topbar">
+        <div></div>
+        <span class="topbar-date" id="currentDate"></span>
+    </div>
+
+    <!-- Page header -->
+    <header>
+        <h1>Configurações</h1>
+        <p>Gerencie informações da lanchonete, preferências e parâmetros do sistema</p>
+    </header>
+
+    <div class="settings-stack">
+
+        <!-- ─ 1. Dados da Lanchonete ──────────────────────────── -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-store"></i>
+                <span class="card-title">Dados da Lanchonete</span>
+            </div>
+            <form method="POST" th:action="@{/configuracoes/salvar-empresa}">
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Nome Estabelecimento</label>
+                        <input type="text" name="nomeEmpresa" placeholder="StockLanches Ltda">
+                    </div>
+                    <div class="field">
+                        <label>CNPJ / Identificação</label>
+                        <input type="text" name="cnpj" placeholder="00.000.000/0001-00">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Salvar Dados</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- ─ 2. Regras de Negócio ────────────────────────────── -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-sliders"></i>
+                <span class="card-title">Regras de Negócio e Estoque</span>
+            </div>
+            <form method="POST" th:action="@{/configuracoes/salvar-parametros}">
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Aviso de Estoque Mínimo Geral</label>
+                        <input type="number" name="estoqueCritico" value="10">
+                        <small>Define o gatilho padrão para marcar o produto como "Baixo".</small>
+                    </div>
+                    <div class="field">
+                        <label>Moeda Padrão</label>
+                        <select name="moeda">
+                            <option value="BRL">Real (R$)</option>
+                            <option value="USD">Dólar ($)</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Atualizar Parâmetros</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- ─ 3. Aparência / Temas ────────────────────────────── -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-paintbrush"></i>
+                <span class="card-title">Configurações do Sistema</span>
+            </div>
+
+            <p class="theme-label">Aparência (Cores)</p>
+            <div class="theme-grid">
+                <div class="theme-card selected" onclick="setTheme('light', this)">
+                    <i class="fas fa-sun"></i>
+                    <span class="theme-name">Standard White</span>
+                    <span class="theme-desc">Tema claro profissional</span>
+                </div>
+                <div class="theme-card" onclick="setTheme('dark', this)">
+                    <i class="fas fa-moon"></i>
+                    <span class="theme-name">Modern Dark Mode</span>
+                    <span class="theme-desc">Tema escuro moderno</span>
+                </div>
+                <div class="theme-card" onclick="setTheme('hybrid', this)">
+                    <i class="fas fa-circle-half-stroke"></i>
+                    <span class="theme-name">Hybrid Blue</span>
+                    <span class="theme-desc">Sidebar escura, conteúdo claro</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─ 4. Notificações ─────────────────────────────────── -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-bell"></i>
+                <span class="card-title">Notification Settings</span>
+            </div>
+
+            <div class="toggle-row">
+                <div class="toggle-info">
+                    <strong>Notificações de Vendas</strong>
+                    <span>Receba alertas quando uma venda for concluída</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-row">
+                <div class="toggle-info">
+                    <strong>Alertas de Estoque Baixo</strong>
+                    <span>Seja notificado quando ingredientes estiverem abaixo do mínimo</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-row">
+                <div class="toggle-info">
+                    <strong>Notificações do Sistema</strong>
+                    <span>Receba atualizações e informações importantes do sistema</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- ─ 5. Segurança ────────────────────────────────────── -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-shield-halved"></i>
+                <span class="card-title">Segurança</span>
+            </div>
+
+            <form method="POST" th:action="@{/configuracoes/alterar-senha}">
+                <div class="field" style="margin-bottom:14px">
+                    <label>Nova Senha</label>
+                    <input type="password" name="novaSenha" placeholder="Nova Senha">
+                </div>
+                <div class="field" style="margin-bottom:16px">
+                    <label>Confirmar Nova Senha</label>
+                    <input type="password" name="confirmarSenha" placeholder="Confirmar Nova Senha">
+                </div>
+                <button type="submit" class="btn-save">Salvar Alterações</button>
+            </form>
+        </div>
+
+    </div><!-- /settings-stack -->
+</main>
+
+</div><!-- /dashboard-layout -->
+
+<script>
+    /* ── Data ─────────────────────────────────────────────── */
+    (function () {
+        const d = new Date();
+        document.getElementById('currentDate').textContent =
+            d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    })();
+
+    /* ── Theme switcher ───────────────────────────────────── */
+    function setTheme(theme, el) {
+        document.documentElement.setAttribute('data-theme', theme);
+        document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        localStorage.setItem('sl-theme', theme);
+    }
+
+    /* Restaura tema salvo */
+    (function () {
+        const saved = localStorage.getItem('sl-theme');
+        if (!saved || saved === 'light') return;
+        document.documentElement.setAttribute('data-theme', saved);
+        const idx = { dark: 1, hybrid: 2 }[saved];
+        const cards = document.querySelectorAll('.theme-card');
+        cards.forEach(c => c.classList.remove('selected'));
+        if (cards[idx]) cards[idx].classList.add('selected');
+    })();
+</script>
+
+</body>
+</html>

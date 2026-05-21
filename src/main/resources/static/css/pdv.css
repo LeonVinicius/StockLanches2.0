@@ -1,0 +1,421 @@
+@charset "UTF-8";
+
+/* ======================================================================
+   PDV.CSS - LAYOUT CORRIGIDO (FULL SCREEN REAL)
+   ====================================================================== */
+
+/* CONTAINER PRINCIPAL */
+.pdv-container {
+    display: flex;
+    flex: 1;
+    gap: 1.5rem;
+
+    align-items: stretch;
+    overflow: hidden;
+
+    min-height: 0; /* 🔥 ESSENCIAL */
+}
+
+/* CATALOGO */
+.pdv-catalog {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* PILLS */
+.category-pills {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+
+    overflow-x: auto;
+    padding-bottom: 5px;
+
+    flex-shrink: 0; /* ✔ corrigido */
+}
+
+.pill-btn {
+    padding: 0.5rem 1.25rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    color: var(--text-secondary);
+    cursor: pointer;
+
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.pill-btn.active,
+.pill-btn:hover {
+    background-color: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+}
+
+/* GRID PRODUTOS - ALTERADO PASSO 1 */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Um pouco menor para telas de notebook */
+    gap: 1rem;
+    align-items: stretch; /* 🔥 MUDOU DE START PARA STRETCH: Força todos os cards da mesma linha a terem o mesmo tamanho exato */
+    
+    flex: 1;
+    height: 100%;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+/* CARD - ALTERADO PASSO 1 */
+.product-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* 🔥 Empurra as informações para baixo de forma idêntica */
+    overflow: hidden;
+    height: 210px; /* 🔥 ALTURA FIXA PERFEITA: Impede que um card invada o espaço do outro */
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+    border-color: var(--accent-blue);
+}
+
+/* CONTAINER DA IMAGEM - ALTERADO PASSO 1 */
+.product-img-placeholder {
+    width: 100%;
+    height: 110px; /* Reduzido levemente para sobrar espaço para o texto */
+    background-color: var(--bg-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+/* INFO - pdv.css */
+.product-info {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem; /* Espaço bem apertado */
+    background: var(--bg-card);
+}
+
+.product-info h3 {
+    font-size: 0.85rem; /* Texto menor */
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    
+    /* 🌟 TRUQUE: Corta o nome se for muito longo e coloca '...' */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-info .category {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.product-info .price {
+    font-size: 0.95rem; /* Preço um pouco menor */
+    font-weight: 800;
+    color: var(--accent-blue);
+    margin-top: 0.2rem;
+}
+
+/* CARRINHO */
+.pdv-cart {
+    width: 350px;
+    flex-shrink: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+    min-height: 0;
+
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+
+    overflow: hidden;
+}
+
+/* HEADER */
+.cart-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+
+    flex-shrink: 0; /* ✔ corrigido */
+}
+
+/* CLIENT AREA */
+.cart-client-area {
+    padding: 0.75rem 1rem;
+    margin: 1rem;
+
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+
+    flex-shrink: 0;
+}
+
+/* ITEMS */
+.cart-items {
+    flex: 1;
+    min-height: 0; /* 🔥 ESSENCIAL */
+
+    overflow-y: auto;
+    padding: 0 1rem;
+}
+
+/* EMPTY */
+.cart-empty {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    color: var(--text-muted);
+    text-align: center;
+
+    gap: 1rem;
+}
+
+/* FOOTER */
+.cart-footer {
+    padding: 1.25rem;
+    background-color: var(--bg-main);
+    border-top: 1px solid var(--border-color);
+
+    flex-shrink: 0;
+}
+
+.cart-totals {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+/* BOTÃO */
+.btn-checkout {
+    width: 100%;
+    padding: 1rem;
+
+    background-color: var(--accent-blue);
+    color: white;
+
+    border: none;
+    border-radius: 10px;
+
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-checkout:hover {
+    background-color: #1d4ed8;
+}
+
+/* ===== MODAL PAGAMENTO ===== */
+.modal-overlay-details {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+
+    align-items: center;
+    justify-content: center;
+}
+
+/* quando o JS abrir, vai setar display:flex */
+.modal-overlay-details[style*="flex"] {
+    display: flex !important;
+}
+
+.modal-box {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 460px;
+    max-width: 95vw;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.btn-close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-muted);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.15s;
+}
+
+.btn-close-modal:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 1.25rem 1.5rem;
+}
+
+.payment-summary {
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.payment-summary p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+}
+
+.payment-summary p strong {
+    color: var(--text-primary);
+}
+
+.payment-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.65rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.payment-total span {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.payment-total strong {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+}
+
+.payment-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1rem;
+    margin-bottom: 0.5rem;
+
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: 0.15s;
+}
+
+.payment-option:hover {
+    border-color: var(--accent-blue);
+    background: #eff6ff;
+}
+
+.payment-option.selected {
+    border-color: var(--accent-blue);
+    background: #eff6ff;
+    color: var(--accent-blue);
+}
+
+.modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 0.75rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: 0.15s;
+}
+
+.btn-cancel:hover {
+    background: var(--bg-hover);
+}
+
+.btn-confirm {
+    flex: 2;
+    padding: 0.75rem;
+    background: var(--accent-blue);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.btn-confirm:hover {
+    background: #1d4ed8;
+}

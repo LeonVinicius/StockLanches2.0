@@ -1,0 +1,136 @@
+@charset "UTF-8";
+/* ==========================================================================
+   HISTORICO.CSS - Estilos Específicos para a tela de Histórico e Auditoria
+   ========================================================================== */
+
+.history-card-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-header-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.history-header-title i {
+    color: var(--accent-blue);
+}
+
+/* Container da Lista */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Card Individual de Movimentação */
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.history-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Listra Colorida Lateral (O segredo do design da imagem) */
+.history-stripe {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 60%;
+    border-radius: 4px;
+}
+
+.stripe-green { background-color: var(--accent-green); }
+.stripe-blue { background-color: var(--accent-blue); }
+.stripe-orange { background-color: var(--accent-orange); }
+
+/* Detalhes do Lado Esquerdo */
+.history-details {
+    padding-left: 1.5rem; /* Espaço para não encostar na listra */
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.history-item-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.history-item-qty {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.25rem 0;
+}
+
+/* Badges parecidos com a imagem (Pix, Cartão, Dinheiro) */
+.history-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    width: fit-content;
+}
+
+.badge-green { background-color: #dcfce7; color: var(--accent-green); }
+.badge-blue { background-color: #eff6ff; color: var(--accent-blue); }
+.badge-orange { background-color: #ffedd5; color: var(--accent-orange); }
+
+/* Metadados do Lado Direito (Data e Usuário) */
+.history-meta {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.history-meta-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.history-meta-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.history-meta-user {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin: 0;
+}

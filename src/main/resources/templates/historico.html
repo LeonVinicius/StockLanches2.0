@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico De Atividades - StockLanches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/estilo-clean.css}">
+    <link rel="stylesheet" th:href="@{/css/historico.css}">
+</head>
+<body>
+
+    <div class="dashboard-layout">
+
+<aside class="sidebar">
+    <div>
+        <!-- Logo -->
+        <div class="logo-container">
+            <i class="fas fa-burger logo-icon" style="width:34px;height:34px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;"></i>
+            <div class="logo-text">
+                <h1>StockLanches</h1>
+                <p>SaaS v3.0</p>
+            </div>
+        </div>
+ 
+        <!-- User -->
+        <div class="user-profile-card">
+            <p class="user-profile-label">Usuário Logado</p>
+            <p class="user-profile-email" th:text="${emailUsuario}">email@exemplo.com</p>
+        </div>
+ 
+        <!-- Nav -->
+        <nav class="menu-nav">
+            <span class="menu-label">Operacional</span>
+ 
+            <a th:href="@{/pdv}" class="menu-item"
+               th:classappend="${activePage == 'pdv'} ? 'active'">
+                <i class="fas fa-desktop"></i> PDV
+            </a>
+ 
+            <a th:href="@{/consultar}" class="menu-item"
+               th:classappend="${activePage == 'estoque'} ? 'active'">
+                <i class="fas fa-boxes-stacked"></i> Estoque
+            </a>
+ 
+            <a th:href="@{/produtos}" class="menu-item"
+               th:classappend="${activePage == 'produtos'} ? 'active'">
+                <i class="fas fa-burger"></i> Produtos
+            </a>
+ 
+            <span class="menu-label">Gestão</span>
+ 
+            <a th:href="@{/estatisticas}" class="menu-item"
+               th:classappend="${activePage == 'home'} ? 'active'">
+                <i class="fas fa-chart-line"></i> Estatísticas
+            </a>
+ 
+            <a th:href="@{/historico}" class="menu-item"
+               th:classappend="${activePage == 'historico'} ? 'active'">
+                <i class="fas fa-history"></i> Histórico
+            </a>
+ 
+            <a th:href="@{/configuracoes}" class="menu-item"
+               th:classappend="${activePage == 'configuracoes'} ? 'active'">
+                <i class="fas fa-cog"></i> Ajustes
+            </a>
+        </nav>
+    </div>
+ 
+    <div>
+        <a th:href="@{/logout}" class="menu-item btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </a>
+    </div>
+</aside>
+
+        <main class="main-content">
+            
+            <header>
+                <h2>Histórico De Atividades</h2>
+                <p>Acompanhe todas as movimentações e auditoria do estoque</p>
+            </header>
+
+            <div class="history-card-container">
+                
+                <div class="history-header">
+                    <div class="history-header-title">
+                        <i class="fas fa-history"></i>
+                        <span>Histórico e Auditoria</span>
+                    </div>
+                    <button class="btn-submit" style="font-size: 0.85rem; padding: 10px 20px; border-radius: 8px;">
+                        <i class="far fa-file-pdf"></i> Gerar Relatório Detalhado
+                    </button>
+                </div>
+
+                <div class="history-list">
+                    
+                    <div th:if="${#lists.isEmpty(historicoLogs)}" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>Nenhuma movimentação registrada.</p>
+                    </div>
+
+                    <div th:each="log : ${historicoLogs}" class="history-item">
+                        
+                        <div class="history-stripe" 
+                             th:classappend="${log.tipo == 'Entrada' ? 'stripe-green' : (log.tipo == 'Saída' ? 'stripe-blue' : 'stripe-orange')}">
+                        </div>
+
+                        <div class="history-details">
+                            <h4 class="history-item-title" th:text="${log.tipo} + ' - ' + ${log.nomeProduto}">Saída - X-Burger</h4>
+                            <p class="history-item-qty" th:text="'Quantidade: ' + ${log.quantidade} + ' unidades'">Quantidade: 2 unidades</p>
+                            
+                            <span class="history-badge" 
+                                  th:text="${log.tipo}"
+                                  th:classappend="${log.tipo == 'Entrada' ? 'badge-green' : (log.tipo == 'Saída' ? 'badge-blue' : 'badge-orange')}">
+                                Saída
+                            </span>
+                        </div>
+
+                        <div class="history-meta">
+                            <h4 class="history-meta-value" style="color: var(--text-secondary); font-size: 0.9rem;">Registrado</h4>
+                            <p class="history-meta-date" th:text="${log.dataFormatada}">12/05/2026 14:30</p>
+                            <p class="history-meta-user" th:text="'Por: ' + ${log.usuarioResponsavel}">Por: Michele</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+<script>
+    (function () {
+        const saved = localStorage.getItem('sl-theme');
+        if (saved && saved !== 'light') {
+            document.documentElement.setAttribute('data-theme', saved);
+        }
+    })();
+</script>
+</body>
+</html>

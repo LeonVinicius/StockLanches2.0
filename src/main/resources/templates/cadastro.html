@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - StockLanches</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-100 to-slate-200 text-slate-800 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white w-full max-w-4xl rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col md:flex-row min-h-[550px]">
+        
+        <div class="flex-1 p-8 lg:p-12 flex flex-col justify-center order-2 md:order-1">
+            
+            <div class="mb-6 text-center md:text-left">
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Criar Conta</h1>
+                <p class="text-sm text-slate-400 font-medium">Cadastre-se para acessar o sistema operacional</p>
+            </div>
+            
+            <div th:if="${mensagemErro}" 
+                 class="mb-4 bg-rose-50 border border-rose-200 text-rose-700 px-4 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2">
+                <i class="fas fa-circle-exclamation"></i>
+                <span th:text="${mensagemErro}"></span>
+            </div>
+
+            <form method="POST" th:action="@{/cadastro}" class="space-y-4">
+                
+                <div>
+                    <label for="usuario" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nome de Usuário</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="usuario" name="usuario" placeholder="Digite seu nome de usuário" required 
+                               th:value="${usuario != null ? usuario.usuario : ''}"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-11 pr-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Email</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="email" id="email" name="email" placeholder="seu@email.com" required 
+                               th:value="${usuario != null ? usuario.email : ''}"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-11 pr-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="senha" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Senha</label>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="password" id="senha" name="senha" placeholder="9-20 caracteres" required 
+                                   minlength="9" maxlength="20" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{9,20}"
+                                   title="A senha deve ter entre 9 e 20 caracteres, contendo pelo menos um número, uma letra maiúscula e uma minúscula."
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-11 pr-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="confirm_password" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Confirmar Senha</label>
+                        <div class="relative">
+                            <i class="fas fa-shield-check absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="password" id="confirm_password" name="confirm_password" placeholder="Repita a senha" required
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-11 pr-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" 
+                        class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-3 rounded-xl transition-colors shadow-lg mt-2">
+                    Criar Minha Conta
+                </button>
+            </form>
+
+            <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+                <a th:href="@{/login}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors">
+                    <i class="fas fa-arrow-left"></i> Voltar para o Login
+                </a>
+            </div>
+
+        </div> 
+
+        <div class="md:w-1/2 bg-blue-600 relative overflow-hidden hidden md:block order-1 md:order-2">
+            <img th:src="@{/images/cadastro-memphis.jpg}" alt="Ilustração de cadastro" 
+                 class="w-full h-full object-cover opacity-90 transition-transform duration-700 hover:scale-105" />
+            <div class="absolute inset-0 bg-blue-900/10 pointer-events-none"></div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,774 @@
+@charset "UTF-8";
+/* ==========================================================================
+   ESTILO-CLEAN.CSS — StockLanches Global Design System v3.0
+   Temas: light (padrão) | dark | hybrid
+   ========================================================================== */
+
+/* ══════════════════════════════════════════════════════════════
+   1. DESIGN TOKENS — TEMA CLARO (padrão)
+   ══════════════════════════════════════════════════════════════ */
+:root {
+    /* Marca */
+    --brand:           #2563EB;
+    --brand-dark:      #1D4ED8;
+    --brand-light:     #EFF6FF;
+    --brand-ring:      rgba(37, 99, 235, 0.15);
+
+    /* Sidebar */
+    --sb-bg:           #FFFFFF;
+    --sb-border:       #E2E8F0;
+    --sb-text:         #475569;
+    --sb-muted:        #94A3B8;
+    --sb-hover:        #F1F5F9;
+    --sb-active-bg:    #2563EB;
+    --sb-active-text:  #FFFFFF;
+    --sb-logo-text:    #0F172A;
+    --sb-user-bg:      #F8FAFC;
+
+    /* Conteúdo */
+    --bg-main:         #F8FAFC;
+    --bg-card:         #FFFFFF;
+    --bg-hover:        #F1F5F9;
+    --bg-input:        #F8FAFC;
+
+    /* Texto */
+    --text-primary:    #0F172A;
+    --text-secondary:  #64748B;
+    --text-muted:      #94A3B8;
+
+    /* Bordas */
+    --border-color:    #E2E8F0;
+    --border-focus:    #2563EB;
+
+    /* Semântica */
+    --accent-blue:     #2563EB;
+    --accent-green:    #16A34A;
+    --accent-orange:   #EA580C;
+    --accent-red:      #DC2626;
+
+    /* Sombras */
+    --shadow-sm:       0 1px 2px rgba(0,0,0,.05);
+    --shadow-card:     0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md:       0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -1px rgba(0,0,0,.05);
+
+    /* Raios */
+    --radius-sm:       8px;
+    --radius-md:       12px;
+    --radius-lg:       16px;
+    --radius-xl:       20px;
+
+    /* Toggle */
+    --toggle-on:       #2563EB;
+    --toggle-off:      #CBD5E1;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   2. TEMA ESCURO
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+    --sb-bg:           #1E293B;
+    --sb-border:       #334155;
+    --sb-text:         #CBD5E1;
+    --sb-muted:        #64748B;
+    --sb-hover:        #2D3F55;
+    --sb-active-bg:    #2563EB;
+    --sb-active-text:  #FFFFFF;
+    --sb-logo-text:    #F1F5F9;
+    --sb-user-bg:      #263244;
+
+    --bg-main:         #0F172A;
+    --bg-card:         #1E293B;
+    --bg-hover:        #263244;
+    --bg-input:        #0F172A;
+
+    --text-primary:    #F1F5F9;
+    --text-secondary:  #94A3B8;
+    --text-muted:      #64748B;
+
+    --border-color:    #334155;
+    --shadow-card:     0 1px 3px rgba(0,0,0,.3);
+    --shadow-md:       0 4px 6px -1px rgba(0,0,0,.4);
+    --toggle-off:      #475569;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   3. TEMA HÍBRIDO — sidebar azul-escuro, conteúdo branco gelo
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="hybrid"] {
+    /* Sidebar idêntica ao dark */
+    --sb-bg:           #1E293B;
+    --sb-border:       #334155;
+    --sb-text:         #CBD5E1;
+    --sb-muted:        #64748B;
+    --sb-hover:        #2D3F55;
+    --sb-active-bg:    #2563EB;
+    --sb-active-text:  #FFFFFF;
+    --sb-logo-text:    #F1F5F9;
+    --sb-user-bg:      #263244;
+
+    /* Conteúdo mantém branco gelo (light) */
+    --bg-main:         #F8FAFC;
+    --bg-card:         #FFFFFF;
+    --bg-hover:        #F1F5F9;
+    --bg-input:        #F8FAFC;
+
+    --text-primary:    #0F172A;
+    --text-secondary:  #64748B;
+    --text-muted:      #94A3B8;
+
+    --border-color:    #E2E8F0;
+    --shadow-card:     0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --toggle-off:      #CBD5E1;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   4. RESET & BASE
+   ══════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    transition: background-color .3s, color .3s;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   5. LAYOUT PRINCIPAL
+   ══════════════════════════════════════════════════════════════ */
+.dashboard-layout {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   6. SIDEBAR
+   ══════════════════════════════════════════════════════════════ */
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: var(--sb-bg);
+    border-right: 1px solid var(--sb-border);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    flex-shrink: 0;
+    transition: background-color .3s, border-color .3s;
+}
+
+/* — Logo — */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 0.5rem 1rem;
+    border-bottom: 1px solid var(--sb-border);
+    margin-bottom: 1rem;
+}
+
+.logo-icon {
+    width: 34px;
+    height: 34px;
+    background: var(--brand);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.logo-text h1 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--sb-logo-text);
+    line-height: 1.2;
+    transition: color .3s;
+}
+
+.logo-text h1 span { color: var(--brand); }
+
+.logo-text p {
+    font-size: 0.75rem;
+    color: var(--sb-muted);
+    font-weight: 400;
+    transition: color .3s;
+}
+
+/* — User card — */
+.user-profile-card {
+    background-color: var(--sb-user-bg);
+    border: 1px solid var(--sb-border);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    transition: background-color .3s, border-color .3s;
+}
+
+.user-avatar {
+    display: none; /* não existe no layout original com label/email empilhados */
+}
+
+.user-profile-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--sb-muted);
+    transition: color .3s;
+}
+
+.user-profile-email {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--sb-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color .3s;
+}
+
+/* — Nav — */
+.menu-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.menu-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--sb-muted);
+    padding: 0.75rem 0.5rem 0.25rem;
+    transition: color .3s;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.75rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--sb-text);
+    text-decoration: none;
+    transition: background-color .18s, color .18s;
+}
+
+.menu-item i {
+    width: 18px;
+    text-align: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    opacity: 1;
+}
+
+.menu-item:hover {
+    background-color: var(--sb-hover);
+    color: var(--sb-logo-text);
+}
+
+.menu-item.active {
+    background-color: var(--sb-active-bg);
+    color: var(--sb-active-text);
+    font-weight: 600;
+}
+
+.menu-item.active i { opacity: 1; }
+
+/* — Logout — */
+.btn-logout {
+    color: #EF4444 !important;
+    border-radius: 10px;
+}
+
+.btn-logout:hover {
+    background-color: rgba(239, 68, 68, .08) !important;
+    color: #EF4444 !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   7. MAIN CONTENT
+   ══════════════════════════════════════════════════════════════ */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 32px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    background-color: var(--bg-main);
+    transition: background-color .3s;
+}
+
+/* — Page header — */
+.main-content > header,
+.page-header {
+    margin-bottom: 24px;
+}
+
+.main-content > header h1,
+.page-header h1,
+.page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.main-content > header p,
+.page-header p,
+.page-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+/* — Top bar (date + bell) — */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.topbar-date {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.notif-btn {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background .18s;
+}
+
+.notif-btn:hover { background: var(--bg-hover); }
+
+.notif-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 16px; height: 16px;
+    background: #EF4444;
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--bg-main);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   8. CARDS
+   ══════════════════════════════════════════════════════════════ */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    box-shadow: var(--shadow-card);
+    transition: background .3s, border-color .3s;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 18px;
+}
+
+.card-header i { color: var(--brand); font-size: 15px; }
+
+.card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-primary);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   9. FORMULÁRIOS
+   ══════════════════════════════════════════════════════════════ */
+.form-row,
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.form-group,
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+label,
+.field label,
+.form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 9px 13px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s, background-color .3s;
+}
+
+input::placeholder, textarea::placeholder { color: var(--text-muted); }
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--border-focus);
+    background-color: var(--bg-card);
+    box-shadow: 0 0 0 3px var(--brand-ring);
+}
+
+select { cursor: pointer; }
+
+small, .field small {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.form-actions { text-align: right; padding-top: 6px; grid-column: 1 / -1; }
+
+/* ══════════════════════════════════════════════════════════════
+   10. BOTÕES
+   ══════════════════════════════════════════════════════════════ */
+.btn-primary, .btn-submit {
+    background-color: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color .2s, box-shadow .2s;
+}
+
+.btn-primary:hover, .btn-submit:hover {
+    background-color: var(--brand-dark);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, .3);
+}
+
+.btn-secondary {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.btn-secondary:hover { background: var(--border-color); }
+
+.btn-danger {
+    background: #FEF2F2;
+    color: var(--accent-red);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.btn-danger:hover { background: #FEE2E2; }
+
+/* Botão de ícone (tabelas) */
+.action-btn {
+    background: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s;
+}
+
+.action-btn.edit   { color: var(--accent-blue);  background-color: #EFF6FF; }
+.action-btn.edit:hover   { background-color: #DBEAFE; }
+.action-btn.delete { color: var(--accent-red);   background-color: #FEF2F2; }
+.action-btn.delete:hover { background-color: #FEE2E2; }
+
+/* ══════════════════════════════════════════════════════════════
+   11. TABELAS
+   ══════════════════════════════════════════════════════════════ */
+.stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.stock-table th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stock-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: background .15s;
+}
+
+.stock-table tbody tr:hover td { background: var(--bg-hover); }
+.stock-table tbody tr:last-child td { border-bottom: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   12. STATUS BADGES
+   ══════════════════════════════════════════════════════════════ */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-badge.bg-green   { background: #DCFCE7; color: var(--accent-green); }
+.status-badge.bg-orange  { background: #FFEDD5; color: var(--accent-orange); }
+.status-badge.critical,
+.status-badge.bg-red     { background: #FEE2E2; color: var(--accent-red); }
+.status-badge.bg-blue    { background: #EFF6FF; color: var(--accent-blue); }
+
+/* ══════════════════════════════════════════════════════════════
+   13. ABAS (TABS)
+   ══════════════════════════════════════════════════════════════ */
+.tabs-container { margin-bottom: 20px; }
+
+.tabs-nav {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 14px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color .2s, border-color .2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.tab-btn:hover { color: var(--text-primary); }
+
+.tab-btn.active {
+    color: var(--brand);
+    border-bottom-color: var(--brand);
+}
+
+.tab-content { display: none; animation: fadeIn .25s ease; }
+.tab-content.active { display: block; }
+
+/* ══════════════════════════════════════════════════════════════
+   14. TOGGLES
+   ══════════════════════════════════════════════════════════════ */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background: var(--toggle-off);
+    border-radius: 24px;
+    cursor: pointer;
+    transition: background .25s;
+}
+
+.slider::before {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    left: 3px; top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .25s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+
+.switch input:checked + .slider             { background: var(--toggle-on); }
+.switch input:checked + .slider::before     { transform: translateX(20px); }
+
+/* ══════════════════════════════════════════════════════════════
+   15. MODAIS
+   ══════════════════════════════════════════════════════════════ */
+.modal-overlay-details {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, .55);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 440px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    animation: modalIn .22s ease;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.btn-close-modal {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--text-muted);
+    line-height: 1;
+    transition: color .2s;
+}
+
+.btn-close-modal:hover { color: var(--text-primary); }
+
+.modal-body   { padding: 22px; }
+.modal-footer {
+    padding: 14px 22px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   16. PAGE HEADER ACTIONS
+   ══════════════════════════════════════════════════════════════ */
+.page-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   17. ANIMAÇÕES
+   ══════════════════════════════════════════════════════════════ */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(.96) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   18. THEME SWITCHER SCRIPT HELPER (classes utilitárias)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Aplica transição suave em toda troca de tema */
+*, *::before, *::after {
+    transition-property: background-color, border-color, color;
+    transition-duration: .25s;
+    transition-timing-function: ease;
+}
+
+/* Exceção: não atrasar transforms/opacidade */
+.menu-item,
+.slider,
+.slider::before,
+.tab-btn,
+.action-btn,
+.btn-primary,
+.btn-submit,
+.btn-secondary,
+input,
+select {
+    transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+}

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque (Insumos) - StockLanches</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/estilo-clean.css}">
+    <link rel="stylesheet" th:href="@{/css/estoque.css}">
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+    <div>
+        <!-- Logo -->
+        <div class="logo-container">
+            <i class="fas fa-burger logo-icon" style="width:34px;height:34px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;"></i>
+            <div class="logo-text">
+                <h1>StockLanches</h1>
+                <p>SaaS v3.0</p>
+            </div>
+        </div>
+ 
+        <!-- User -->
+        <div class="user-profile-card">
+            <p class="user-profile-label">Usuário Logado</p>
+            <p class="user-profile-email" th:text="${emailUsuario}">email@exemplo.com</p>
+        </div>
+ 
+        <!-- Nav -->
+        <nav class="menu-nav">
+            <span class="menu-label">Operacional</span>
+ 
+            <a th:href="@{/pdv}" class="menu-item"
+               th:classappend="${activePage == 'pdv'} ? 'active'">
+                <i class="fas fa-desktop"></i> PDV
+            </a>
+ 
+            <a th:href="@{/consultar}" class="menu-item"
+               th:classappend="${activePage == 'estoque'} ? 'active'">
+                <i class="fas fa-boxes-stacked"></i> Estoque
+            </a>
+ 
+            <a th:href="@{/produtos}" class="menu-item"
+               th:classappend="${activePage == 'produtos'} ? 'active'">
+                <i class="fas fa-burger"></i> Produtos
+            </a>
+ 
+            <span class="menu-label">Gestão</span>
+ 
+            <a th:href="@{/estatisticas}" class="menu-item"
+               th:classappend="${activePage == 'home'} ? 'active'">
+                <i class="fas fa-chart-line"></i> Estatísticas
+            </a>
+ 
+            <a th:href="@{/historico}" class="menu-item"
+               th:classappend="${activePage == 'historico'} ? 'active'">
+                <i class="fas fa-history"></i> Histórico
+            </a>
+ 
+            <a th:href="@{/configuracoes}" class="menu-item"
+               th:classappend="${activePage == 'configuracoes'} ? 'active'">
+                <i class="fas fa-cog"></i> Ajustes
+            </a>
+        </nav>
+    </div>
+ 
+    <div>
+        <a th:href="@{/logout}" class="menu-item btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </a>
+    </div>
+</aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+
+        <header>
+            <h1>Controle de Estoque</h1>
+            <p>Gerencie os insumos e vincule-os ao cardápio</p>
+        </header>
+
+        <!-- CARDS RESUMO -->
+        <div class="estoque-summary">
+            <div class="summary-card">
+                <div class="summary-card-icon blue"><i class="fas fa-boxes-stacked"></i></div>
+                <div class="summary-card-info">
+                    <p>Total de Insumos</p>
+                    <h3 id="totalInsumos">—</h3>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-icon green"><i class="fas fa-check-circle"></i></div>
+                <div class="summary-card-info">
+                    <p>Em Estoque Adequado</p>
+                    <h3 id="totalAdequado">—</h3>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="summary-card-info">
+                    <p>Estoque Crítico</p>
+                    <h3 id="totalCritico">—</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="estoque-toolbar">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInsumo" placeholder="Buscar insumo...">
+            </div>
+
+            <select class="filter-select" id="filtroStatus">
+                <option value="todos">Todos os status</option>
+                <option value="adequado">Adequado</option>
+                <option value="alerta">Alerta</option>
+                <option value="critico">Crítico</option>
+            </select>
+
+            <button class="btn-add-insumo" onclick="abrirModalAdicionar()">
+                <i class="fas fa-plus"></i> Adicionar Insumo
+            </button>
+        </div>
+
+        <!-- TABELA -->
+        <div class="table-wrapper">
+            <table class="stock-table">
+                <thead>
+                    <tr>
+                        <th style="width:70px">ID</th>
+                        <th>Insumo</th>
+                        <th style="width:180px">Qtd Atual</th>
+                        <th style="width:90px">Unidade</th>
+                        <th style="width:130px">Status</th>
+                        <th style="width:130px;text-align:right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyInsumos">
+                    <!-- Preenchido via JS (mock) ou via Thymeleaf (veja comentário abaixo) -->
+                </tbody>
+            </table>
+        </div>
+
+        <!--
+        ============================================================
+        NOTA PARA INTEGRAÇÃO COM THYMELEAF + SPRING BOOT:
+        Quando o back-end estiver pronto, substitua o tbody acima por:
+
+        <tbody>
+            <tr th:each="insumo, stat : ${insumos}">
+                <td class="td-id" th:text="'#' + ${#strings.leftPad(insumo.id, 3, '0')}"></td>
+                <td class="td-nome" th:text="${insumo.nome}"></td>
+                <td th:text="${insumo.qtdAtual + ' ' + insumo.unidade}"></td>
+                <td th:text="${insumo.unidade}"></td>
+                <td>
+                    <span class="status-badge"
+                          th:classappend="${insumo.status}"
+                          th:text="${insumo.statusLabel}"></span>
+                </td>
+                <td class="td-acoes">
+                    <div class="btn-acoes-group">
+                        <button class="btn-icon green"
+                                th:onclick="|abrirModalVincular(${insumo.id})|">
+                            <i class="fas fa-link"></i>
+                        </button>
+                        <button class="btn-icon blue"
+                                th:onclick="|abrirModalEditar(${insumo.id})|">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="btn-icon red"
+                                th:onclick="|abrirModalExcluir(${insumo.id})|">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+
+        E inicialize os arrays no JS via:
+        <script th:inline="javascript">
+            insumos = /*[[${insumosJson}]]*/ [];
+            produtos = /*[[${produtosJson}]]*/ [];
+            fichaTecnica = /*[[${fichaTecnicaJson}]]*/ {};
+        </script>
+        ============================================================
+        -->
+
+    </main>
+</div>
+
+<!-- ===================================================
+     MODAL: ADICIONAR / EDITAR INSUMO
+     =================================================== -->
+<div class="modal-overlay" id="modalInsumo">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="formInsumoTitle">Adicionar Insumo</h3>
+            <button class="btn-close-modal" onclick="fecharModalInsumo()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Nome do Insumo</label>
+                <input type="text" id="formInsumoNome" placeholder="Ex: Pão de Hambúrguer">
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label>Quantidade Atual</label>
+                    <input type="number" id="formInsumoQtd" placeholder="0" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Qtd Mínima (Alerta)</label>
+                    <input type="number" id="formInsumoMin" placeholder="0" min="0" step="0.01">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Unidade de Medida</label>
+                <select id="formInsumoUnd">
+                    <option value="un">un (Unidade)</option>
+                    <option value="g">g (Gramas)</option>
+                    <option value="kg">kg (Quilogramas)</option>
+                    <option value="ml">ml (Mililitros)</option>
+                    <option value="l">l (Litros)</option>
+                    <option value="cx">cx (Caixa)</option>
+                    <option value="pct">pct (Pacote)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="fecharModalInsumo()">Cancelar</button>
+            <button class="btn-primary" onclick="salvarInsumo()">
+                <i class="fas fa-save"></i> Salvar Insumo
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================================================
+     MODAL: CONFIRMAR EXCLUSÃO
+     =================================================== -->
+<div class="modal-overlay" id="modalExcluir">
+    <div class="modal-box" style="width:420px">
+        <div class="modal-header">
+            <h3>Confirmar Exclusão</h3>
+            <button class="btn-close-modal" onclick="fecharModalExcluir()">×</button>
+        </div>
+
+        <div class="modal-body" style="text-align:center;padding:2rem 1.5rem">
+            <div style="width:56px;height:56px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.4rem;color:var(--accent-red)">
+                <i class="fas fa-trash"></i>
+            </div>
+            <p style="font-size:1rem;font-weight:700;margin-bottom:0.5rem">Excluir insumo?</p>
+            <p style="color:var(--text-secondary);font-size:0.875rem">
+                O insumo <strong id="excluirNome"></strong> será removido permanentemente
+                junto com todos os seus vínculos de produtos.
+            </p>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="fecharModalExcluir()">Cancelar</button>
+            <button class="btn-danger" onclick="confirmarExcluir()">
+                <i class="fas fa-trash"></i> Sim, excluir
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================================================
+     MODAL: VINCULAR INSUMO → PRODUTOS (Ficha Técnica)
+     =================================================== -->
+<div class="modal-overlay" id="modalVincular">
+    <div class="modal-box wide">
+        <div class="modal-header">
+            <h3><i class="fas fa-link" style="color:var(--accent-blue);margin-right:8px"></i>Ficha Técnica — Vínculos do Insumo</h3>
+            <button class="btn-close-modal" onclick="fecharModalVincular()">×</button>
+        </div>
+
+        <div class="modal-body">
+
+            <!-- Insumo em destaque -->
+            <div class="insumo-destaque">
+                <i class="fas fa-box"></i>
+                <div class="insumo-destaque-info">
+                    <h4 id="vinc-nome">—</h4>
+                    <p id="vinc-estoque">—</p>
+                </div>
+            </div>
+
+            <!-- Explicação -->
+            <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:1rem;line-height:1.5">
+                <i class="fas fa-info-circle" style="color:var(--accent-blue)"></i>
+                Defina <strong>quanto deste insumo</strong> é consumido a cada unidade vendida de cada produto.
+                Ao finalizar uma venda no PDV, o sistema debitará automaticamente essas quantidades do estoque.
+            </p>
+
+            <!-- Lista de vínculos existentes -->
+            <div class="vinculos-lista" id="vinculosLista"></div>
+
+            <!-- Formulário para adicionar novo vínculo -->
+            <div class="add-vinculo-form">
+                <h5><i class="fas fa-plus-circle"></i> Adicionar vínculo</h5>
+                <div class="form-row-3">
+                    <div class="form-group" style="margin-bottom:0;grid-column:span 1">
+                        <select id="vinc-produto-sel">
+                            <option value="">Produto...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0">
+                        <input type="number" id="vinc-qty-input" placeholder="Quantidade" min="0.01" step="0.01">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0">
+                        <input type="text" id="vinc-und-input" placeholder="Unidade (g, un...)">
+                    </div>
+                </div>
+                <button class="btn-add-vinculo" onclick="adicionarVinculo()">
+                    <i class="fas fa-plus"></i> Adicionar Vínculo
+                </button>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="fecharModalVincular()">Cancelar</button>
+            <button class="btn-primary" onclick="fecharModalVincular(); toast('Vínculos salvos!')">
+                <i class="fas fa-check"></i> Concluir
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle ok"></i>
+    <span>Operação realizada com sucesso!</span>
+</div>
+
+<script th:src="@{/js/estoque.js}"></script>
+<script>
+    (function () {
+        const saved = localStorage.getItem('sl-theme');
+        if (saved && saved !== 'light') {
+            document.documentElement.setAttribute('data-theme', saved);
+        }
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Produto - StockLanches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/estilo-clean.css}">
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div>
+                <div class="logo-container">
+                    <i class="fas fa-burger logo-icon"></i>
+                    <div class="logo-text">
+                        <h1>StockLanches</h1>
+                        <p>SaaS v3.0</p>
+                    </div>
+                </div>
+
+                <div class="user-profile-card">
+                    <p class="user-profile-label">Usuário Logado</p>
+                    <p class="user-profile-email" th:text="${emailUsuario}">admin@lanchonete.com</p>
+                </div>
+
+                <nav class="menu-nav">
+                    <span class="menu-label">Operacional</span>
+                    <a th:href="@{/pdv}" class="menu-item">
+                        <i class="fas fa-desktop"></i> PDV (Vendas)
+                    </a>
+                    <a th:href="@{/consultar}" class="menu-item active">
+                        <i class="fas fa-boxes-stacked"></i> Estoque (Insumos)
+                    </a>
+                    <a th:href="@{/clientes}" class="menu-item">
+                        <i class="fas fa-users"></i> Clientes
+                    </a>
+
+                    <span class="menu-label">Gestão</span>
+                    <a th:href="@{/home}" class="menu-item">
+                        <i class="fas fa-chart-bar"></i> Estatísticas
+                    </a>
+                    <a th:href="@{/historico}" class="menu-item">
+                        <i class="fas fa-history"></i> Histórico
+                    </a>
+                    <a th:href="@{/configuracoes}" class="menu-item">
+                        <i class="fas fa-cog"></i> Configurações
+                    </a>
+                </nav>
+            </div>
+            <div class="pt-4">
+                <a th:href="@{/logout}" class="menu-item btn-logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <div class="page-header-actions">
+                <div>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">Adicionar Novo Produto</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Preencha os dados do novo item ou insumo do estoque.</p>
+                </div>
+                <a th:href="@{/consultar}" class="btn-submit" style="text-decoration: none; background-color: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border-color);">
+                    <i class="fas fa-arrow-left"></i> Voltar para Lista
+                </a>
+            </div>
+
+            <div th:if="${mensagemSucesso}" style="background: #dcfce7; color: var(--accent-green); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <i class="fas fa-check-circle"></i> <span th:text="${mensagemSucesso}"></span>
+            </div>
+
+            <div class="content-box">
+                <div class="tabs-container">
+                    <div class="tabs-nav">
+                        <button class="tab-btn active" onclick="abrirAba('aba-basico', this)"><i class="fas fa-info-circle"></i> Informações Básicas</button>
+                        <button class="tab-btn" onclick="abrirAba('aba-ingredientes', this)"><i class="fas fa-list"></i> Ingredientes / Composição</button>
+                    </div>
+                </div>
+
+                <form method="POST" th:action="@{/adicionar}" style="display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <div id="aba-basico" class="tab-content active">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nome do Produto</label>
+                                <input type="text" name="nome" placeholder="Ex: X-Burger Completo" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Categoria</label>
+                                <select name="categoria" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="Lanches">Lanches</option>
+                                    <option value="Bebidas">Bebidas</option>
+                                    <option value="Sobremesas">Sobremesas</option>
+                                    <option value="Insumos">Insumos (Para composição)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="form-group">
+                                <label>Quantidade Atual (Estoque)</label>
+                                <input type="number" name="quantidade" placeholder="0" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Preço de Custo (R$)</label>
+                                <input type="number" name="precoCusto" placeholder="0.00" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Preço de Venda (R$)</label>
+                                <input type="number" name="precoVenda" placeholder="0.00" step="0.01" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Estoque Mínimo (Alerta)</label>
+                                <input type="number" name="estoqueMinimo" placeholder="5" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Fornecedor</label>
+                                <input type="text" name="fornecedor" placeholder="Ex: Distribuidora Central">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descrição Opcional</label>
+                            <textarea name="descricao" rows="3" placeholder="Detalhes sobre o produto..."></textarea>
+                        </div>
+                    </div>
+
+                    <div id="aba-ingredientes" class="tab-content">
+                        <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                            <p style="color: var(--accent-blue); font-size: 0.85rem; margin: 0; font-weight: 600;">
+                                <i class="fas fa-info-circle"></i> Aqui você pode vincular insumos do estoque a este produto. (Futuramente ao vender 1 Lanche, os ingredientes serão baixados automaticamente).
+                            </p>
+                        </div>
+
+                        <div class="form-row" style="align-items: flex-end;">
+                            <div class="form-group" style="flex: 2;">
+                                <label>Buscar Insumo no Estoque</label>
+                                <select>
+                                    <option>Pão de Hambúrguer (Qtd: 150)</option>
+                                    <option>Carne Bovina 150g (Qtd: 80)</option>
+                                    <option>Fatia de Queijo (Qtd: 200)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Quantidade gasta</label>
+                                <input type="number" value="1" min="1">
+                            </div>
+                            <button type="button" class="btn-submit" style="background-color: var(--bg-hover); color: var(--accent-blue); border: 1px dashed var(--accent-blue);" onclick="alert('Funcionalidade de composição de itens será ativada no back-end futuramente!')">
+                                <i class="fas fa-plus"></i> Adicionar
+                            </button>
+                        </div>
+
+                        <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-top: 10px;">
+                            <table class="stock-table" style="margin: 0;">
+                                <thead>
+                                    <tr>
+                                        <th>Insumo</th>
+                                        <th>Qtd. Necessária</th>
+                                        <th style="width: 80px; text-align: center;">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="color: var(--text-secondary); font-size: 0.9rem;">Nenhum ingrediente vinculado ainda.</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px; text-align: right;">
+                        <button type="submit" class="btn-submit" style="font-size: 1rem; padding: 12px 24px;">
+                            <i class="fas fa-save"></i> Salvar Produto
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function abrirAba(idAba, elementoBotao) {
+            // Esconde todas as abas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Tira a cor azul de todos os botões
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Mostra a aba clicada e pinta o botão de azul
+            document.getElementById(idAba).classList.add('active');
+            elementoBotao.classList.add('active');
+        }
+    </script>
+</body>
+</html>
