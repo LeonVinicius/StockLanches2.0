@@ -1,19 +1,21 @@
 package br.modelo.lanchonete.demo.pagina;
 
-import br.modelo.lanchonete.demo.model.Produto;
-import br.modelo.lanchonete.demo.repository.CategoriaRepository; // 🔥 NOVO IMPORT
-import br.modelo.lanchonete.demo.service.HistoricoService;
+import br.modelo.lanchonete.demo.dto.request.ItemVendaRequestDTO;
+import br.modelo.lanchonete.demo.dto.response.ProdutoResponseDTO;
+import br.modelo.lanchonete.demo.dto.response.VerificacaoEstoqueResponseDTO;
+import br.modelo.lanchonete.demo.service.CategoriaService;
+import br.modelo.lanchonete.demo.service.EstoqueService;
 import br.modelo.lanchonete.demo.service.ProdutoService;
 import br.modelo.lanchonete.demo.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class PdvController {
@@ -25,12 +27,14 @@ public class PdvController {
     private ProdutoService produtoService;
 
     @Autowired
-    private HistoricoService historicoService;
+    private CategoriaService categoriaService;
 
     @Autowired
-    private CategoriaRepository categoriaRepository; // 🔥 ADICIONADO
+    private EstoqueService estoqueService;
 
-    // Abre a tela do PDV com os produtos reais do banco
+    // ------------------------------------------------------------------
+    // Abre a página do PDV
+    // ------------------------------------------------------------------
     @GetMapping("/pdv")
     public String abrirPdv(Model model, @RequestParam(required = false) String busca) {
         if (!usuarioService.isUserLogged()) return "redirect:/login";
@@ -39,46 +43,88 @@ public class PdvController {
         model.addAttribute("emailUsuario", usuarioService.getUsuarioLogado().getEmail());
         model.addAttribute("activePage", "pdv");
 
-        // Permite filtrar os produtos dinamicamente na tela
-        List<Produto> produtos = produtoService.filtrar(busca, null, null);
+        List<ProdutoResponseDTO> produtos = produtoService.filtrarProdutos(busca, null, null);
         model.addAttribute("produtos", produtos);
         model.addAttribute("buscaAtual", busca);
-        
-        // 🔥 ADICIONADO: Puxa as categorias do banco para as abas do PDV
-        model.addAttribute("categorias", categoriaRepository.findAll());
+        model.addAttribute("categorias", categoriaService.listarTodas());
 
         return "pdv";
     }
 
-    // Processa a venda de um item e abate do estoque físico
+    // ------------------------------------------------------------------
+    // Endpoint chamado pelo pdv.js via fetch POST /pdv/finalizar
+    // Recebe JSON com: cliente, formaPagamento, total, itens[]
+    // ------------------------------------------------------------------
+    @PostMapping("/pdv/finalizar")
+    @ResponseBody
+    public ResponseEntity<?> finalizarVenda(@RequestBody Map<String, Object> payload) {
+        if (!usuarioService.isUserLogged()) {
+            return ResponseEntity.status(403).body("Usuário não logado");
+        }
+
+        try {
+            // Extrai a lista de itens do JSON recebido
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> itensRaw = (List<Map<String, Object>>) payload.get("itens");
+
+            if (itensRaw == null || itensRaw.isEmpty()) {
+                return ResponseEntity.badRequest().body("Carrinho vazio.");
+            }
+
+            // Converte para ItemVendaRequestDTO
+            List<ItemVendaRequestDTO> itens = itensRaw.stream().map(i -> {
+                ItemVendaRequestDTO dto = new ItemVendaRequestDTO();
+                dto.setProdutoId(Long.valueOf(i.get("id").toString()));
+                dto.setQuantidade(Integer.valueOf(i.get("quantidade").toString()));
+                return dto;
+            }).toList();
+
+            // 1. Verifica disponibilidade
+            VerificacaoEstoqueResponseDTO verificacao = estoqueService.verificarDisponibilidade(itens);
+            if (!verificacao.isOk()) {
+                return ResponseEntity.badRequest().body(verificacao);
+            }
+
+            // 2. Debita o estoque
+            String usuario = usuarioService.getUsuarioLogado().getUsuario();
+            estoqueService.debitarEstoque(itens, usuario);
+
+            Map<String, Object> resposta = new HashMap<>();
+            resposta.put("ok", true);
+            resposta.put("mensagem", "Venda finalizada com sucesso!");
+            return ResponseEntity.ok(resposta);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao processar venda: " + e.getMessage());
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Mantido para compatibilidade com form POST legado (opcional)
+    // ------------------------------------------------------------------
     @PostMapping("/pdv/vender")
-    public String processarVenda(@RequestParam Long produtoId, 
-                                 @RequestParam Integer quantidadeVenda, 
-                                 RedirectAttributes ra) {
+    public String processarVendaForm(@RequestParam Long produtoId,
+                                     @RequestParam Integer quantidadeVenda,
+                                     org.springframework.web.servlet.mvc.support.RedirectAttributes ra) {
         if (!usuarioService.isUserLogged()) return "redirect:/login";
 
-        Produto produto = produtoService.buscarPorId(produtoId);
-        
-        if (produto != null) {
-            if (produto.getQuantidade() >= quantidadeVenda) {
-                // Abate o estoque do produto
-                produto.setQuantidade(produto.getQuantidade() - quantidadeVenda);
-                produtoService.atualizar(produto);
+        try {
+            ItemVendaRequestDTO itemVenda = new ItemVendaRequestDTO();
+            itemVenda.setProdutoId(produtoId);
+            itemVenda.setQuantidade(quantidadeVenda);
+            List<ItemVendaRequestDTO> itens = List.of(itemVenda);
 
-                // Registra de forma automática no seu Histórico existente
-                historicoService.registrar(
-                    "Saída", 
-                    produto.getNome() + " (Venda PDV)", 
-                    quantidadeVenda, 
-                    usuarioService.getUsuarioLogado().getUsuario()
-                );
-
-                ra.addFlashAttribute("mensagemSucesso", "Venda realizada com sucesso!");
-            } else {
-                ra.addFlashAttribute("mensagemErro", "Estoque insuficiente para o produto: " + produto.getNome());
+            VerificacaoEstoqueResponseDTO verificacao = estoqueService.verificarDisponibilidade(itens);
+            if (!verificacao.isOk()) {
+                ra.addFlashAttribute("mensagemErro", "Estoque insuficiente para concluir a venda.");
+                return "redirect:/pdv";
             }
-        } else {
-            ra.addFlashAttribute("mensagemErro", "Produto não encontrado.");
+
+            estoqueService.debitarEstoque(itens, usuarioService.getUsuarioLogado().getUsuario());
+            ra.addFlashAttribute("mensagemSucesso", "Venda realizada com sucesso!");
+
+        } catch (Exception e) {
+            ra.addFlashAttribute("mensagemErro", "Erro ao processar venda: " + e.getMessage());
         }
 
         return "redirect:/pdv";

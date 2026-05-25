@@ -1,52 +1,34 @@
 // ==========================================================================
-// ESTOQUE.JS - Controle de Insumos + Ficha Técnica (Vínculo Produto-Insumo)
+// ESTOQUE.JS - Controle de Insumos Real integrado via API Monolítica
 // ==========================================================================
 
-// --------------------------------------------------------------------------
-// ESTADO GLOBAL
-// --------------------------------------------------------------------------
-
-// Insumos cadastrados (mock — virá do back-end via Thymeleaf/API)
-// Estrutura: { id, nome, qtdAtual, unidade, qtdMinima }
-let insumos = [
-    { id: 1, nome: 'Pão de Hambúrguer',       qtdAtual: 100,  unidade: 'un', qtdMinima: 30 },
-    { id: 2, nome: 'Carne de Hambúrguer (150g)', qtdAtual: 50, unidade: 'un', qtdMinima: 20 },
-    { id: 3, nome: 'Queijo Cheddar',           qtdAtual: 2500, unidade: 'g',  qtdMinima: 500 },
-    { id: 4, nome: 'Salsicha',                 qtdAtual: 80,   unidade: 'un', qtdMinima: 20 },
-    { id: 5, nome: 'Batata',                   qtdAtual: 350,  unidade: 'g',  qtdMinima: 500 },
-    { id: 6, nome: 'Coca-Cola Lata',           qtdAtual: 10,   unidade: 'un', qtdMinima: 24 },
-];
-
-// Produtos cadastrados no cardápio (mock — virá do back-end)
-// Estrutura: { id, nome, categoria }
-let produtos = [
-    { id: 1, nome: 'X-Burger Clássico', categoria: 'Lanches' },
-    { id: 2, nome: 'X-Bacon',           categoria: 'Lanches' },
-    { id: 3, nome: 'X-Tudo',            categoria: 'Lanches' },
-    { id: 4, nome: 'Coca-Cola 350ml',   categoria: 'Bebidas' },
-    { id: 5, nome: 'Combo Família',     categoria: 'Combos'  },
-];
-
-// Ficha técnica: mapa insumoId → lista de vínculos
-// Estrutura: { [insumoId]: [ { produtoId, quantidade, unidade } ] }
-let fichaTecnica = {
-    1: [ { produtoId: 1, quantidade: 1, unidade: 'un' }, { produtoId: 2, quantidade: 1, unidade: 'un' } ],
-    2: [ { produtoId: 1, quantidade: 1, unidade: 'un' } ],
-    3: [ { produtoId: 1, quantidade: 30, unidade: 'g'  }, { produtoId: 2, quantidade: 50, unidade: 'g' } ],
-};
-
-// Controle de qual insumo está sendo editado nos modais
-let insumoEmEdicao = null;
-
-// Filtro ativo
+let insumos = []; // Carregado em tempo real do banco de dados
+let insumoEmEdicaoId = null; // null = Novo, número = Editando
 let filtroStatus = 'todos';
 let termoBusca   = '';
 
 // --------------------------------------------------------------------------
-// HELPERS
+// CARREGAR DADOS DO SERVIDOR (BANCO DE DADOS)
 // --------------------------------------------------------------------------
+async function carregarInsumosDoBanco() {
+    try {
+        const response = await fetch('/api/estoque');
+        if (response.ok) {
+            insumos = await response.json();
+            renderTabela();
+        } else {
+            console.error("Erro ao carregar insumos do servidor.");
+        }
+    } catch (error) {
+        console.error("Erro de conexão ao buscar insumos:", error);
+    }
+}
 
+// --------------------------------------------------------------------------
+// AUXILIARES DE RENDERIZAÇÃO E REGRA DE NEGÓCIO
+// --------------------------------------------------------------------------
 function calcularStatus(insumo) {
+    if (!insumo.qtdMinima || insumo.qtdMinima === 0) return 'adequado';
     const ratio = insumo.qtdAtual / insumo.qtdMinima;
     if (ratio >= 1)   return 'adequado';
     if (ratio >= 0.5) return 'alerta';
@@ -61,14 +43,11 @@ function statusIcon(s) {
     return { adequado: 'fa-check-circle', alerta: 'fa-exclamation-triangle', critico: 'fa-exclamation-triangle' }[s];
 }
 
-function fmt(n) { return n.toLocaleString('pt-BR'); }
-
-function proximoId() {
-    return insumos.length ? Math.max(...insumos.map(i => i.id)) + 1 : 1;
-}
+function fmt(n) { return n ? n.toLocaleString('pt-BR') : '0'; }
 
 function toast(msg, tipo = 'ok') {
     const t = document.getElementById('toast');
+    if (!t) return;
     const i = t.querySelector('i');
     const s = t.querySelector('span');
     i.className = `fas ${tipo === 'ok' ? 'fa-check-circle ok' : 'fa-times-circle err'}`;
@@ -78,20 +57,18 @@ function toast(msg, tipo = 'ok') {
 }
 
 // --------------------------------------------------------------------------
-// RENDER TABELA
+// RENDERIZAR TABELA DINÂMICA
 // --------------------------------------------------------------------------
-
 function renderTabela() {
     const tbody = document.getElementById('tbodyInsumos');
+    if (!tbody) return;
 
     let lista = [...insumos];
 
-    // Filtro por busca
     if (termoBusca) {
         lista = lista.filter(i => i.nome.toLowerCase().includes(termoBusca.toLowerCase()));
     }
 
-    // Filtro por status
     if (filtroStatus !== 'todos') {
         lista = lista.filter(i => calcularStatus(i) === filtroStatus);
     }
@@ -112,7 +89,6 @@ function renderTabela() {
         const status = calcularStatus(insumo);
         const ratio  = Math.min(insumo.qtdAtual / insumo.qtdMinima, 1);
         const idPad  = String(insumo.id).padStart(3, '0');
-        const vincQtd = (fichaTecnica[insumo.id] || []).length;
 
         return `
         <tr>
@@ -135,10 +111,6 @@ function renderTabela() {
             </td>
             <td class="td-acoes">
                 <div class="btn-acoes-group">
-                    <button class="btn-icon green" title="Vincular a Produtos (${vincQtd} vínculo${vincQtd !== 1 ? 's' : ''})"
-                            onclick="abrirModalVincular(${insumo.id})">
-                        <i class="fas fa-link"></i>
-                    </button>
                     <button class="btn-icon blue" title="Editar" onclick="abrirModalEditar(${insumo.id})">
                         <i class="fas fa-pen"></i>
                     </button>
@@ -153,22 +125,21 @@ function renderTabela() {
     renderSummary();
 }
 
-// --------------------------------------------------------------------------
-// CARDS DE RESUMO
-// --------------------------------------------------------------------------
-
 function renderSummary() {
-    document.getElementById('totalInsumos').textContent  = insumos.length;
-    document.getElementById('totalAdequado').textContent = insumos.filter(i => calcularStatus(i) === 'adequado').length;
-    document.getElementById('totalCritico').textContent  = insumos.filter(i => calcularStatus(i) === 'critico').length;
+    const tInsumos = document.getElementById('totalInsumos');
+    const tAdequado = document.getElementById('totalAdequado');
+    const tCritico = document.getElementById('totalCritico');
+    
+    if(tInsumos) tInsumos.textContent = insumos.length;
+    if(tAdequado) tAdequado.textContent = insumos.filter(i => calcularStatus(i) === 'adequado').length;
+    if(tCritico) tCritico.textContent = insumos.filter(i => calcularStatus(i) === 'critico').length;
 }
 
 // --------------------------------------------------------------------------
-// MODAL: ADICIONAR / EDITAR INSUMO
+// GERENCIAMENTO DOS MODAIS (ADICIONAR / SALVAR / EDITAR / DELETAR)
 // --------------------------------------------------------------------------
-
 function abrirModalAdicionar() {
-    insumoEmEdicao = null;
+    insumoEmEdicaoId = null;
     document.getElementById('formInsumoTitle').textContent = 'Adicionar Insumo';
     document.getElementById('formInsumoNome').value    = '';
     document.getElementById('formInsumoQtd').value     = '';
@@ -178,10 +149,10 @@ function abrirModalAdicionar() {
 }
 
 function abrirModalEditar(id) {
-    const insumo = insumos.find(i => i.id === id);
+    const insumo = insumos.find(i => i.id == id);
     if (!insumo) return;
-    insumoEmEdicao = id;
-
+    
+    insumoEmEdicaoId = id;
     document.getElementById('formInsumoTitle').textContent = 'Editar Insumo';
     document.getElementById('formInsumoNome').value = insumo.nome;
     document.getElementById('formInsumoQtd').value  = insumo.qtdAtual;
@@ -194,43 +165,55 @@ function fecharModalInsumo() {
     document.getElementById('modalInsumo').classList.remove('open');
 }
 
-function salvarInsumo() {
+// 🔥 SALVAMENTO EM TEMPO REAL INTEGRADO AO CONTROLLER
+async function salvarInsumo() {
     const nome  = document.getElementById('formInsumoNome').value.trim();
     const qtd   = parseFloat(document.getElementById('formInsumoQtd').value);
     const min   = parseFloat(document.getElementById('formInsumoMin').value);
     const und   = document.getElementById('formInsumoUnd').value;
 
     if (!nome || isNaN(qtd) || isNaN(min)) {
-        toast('Preencha todos os campos corretamente.', 'err');
+        alert('Por favor, preencha todos os campos do insumo corretamente.');
         return;
     }
 
-    if (insumoEmEdicao !== null) {
-        // Editar
-        const insumo = insumos.find(i => i.id === insumoEmEdicao);
-        insumo.nome      = nome;
-        insumo.qtdAtual  = qtd;
-        insumo.qtdMinima = min;
-        insumo.unidade   = und;
-        toast(`"${nome}" atualizado com sucesso!`);
-    } else {
-        // Novo
-        insumos.push({ id: proximoId(), nome, qtdAtual: qtd, unidade: und, qtdMinima: min });
-        toast(`"${nome}" adicionado ao estoque!`);
+    const payload = {
+        nome: nome,
+        qtdAtual: qtd,
+        qtdMinima: min,
+        unidade: und
+    };
+
+    // Caso seja uma edição, acopla o ID existente no JSON para o JPA atualizar
+    if (insumoEmEdicaoId !== null) {
+        payload.id = insumoEmEdicaoId;
     }
 
-    fecharModalInsumo();
-    renderTabela();
+    try {
+        const response = await fetch('/api/estoque/salvar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            toast(insumoEmEdicaoId !== null ? 'Insumo atualizado!' : 'Insumo cadastrado!');
+            fecharModalInsumo();
+            carregarInsumosDoBanco(); // Atualiza a tabela na hora puxando do banco
+        } else {
+            const txtErro = await response.text();
+            alert("Erro do servidor: " + txtErro);
+        }
+    } catch (error) {
+        console.error("Erro transacional ao salvar:", error);
+        alert("Falha na comunicação com o servidor.");
+    }
 }
 
-// --------------------------------------------------------------------------
-// MODAL: EXCLUIR
-// --------------------------------------------------------------------------
-
 function abrirModalExcluir(id) {
-    const insumo = insumos.find(i => i.id === id);
+    const insumo = insumos.find(i => i.id == id);
     if (!insumo) return;
-    insumoEmEdicao = id;
+    insumoEmEdicaoId = id;
     document.getElementById('excluirNome').textContent = insumo.nome;
     document.getElementById('modalExcluir').classList.add('open');
 }
@@ -239,253 +222,46 @@ function fecharModalExcluir() {
     document.getElementById('modalExcluir').classList.remove('open');
 }
 
-function confirmarExcluir() {
-    const insumo = insumos.find(i => i.id === insumoEmEdicao);
-    const nome = insumo ? insumo.nome : '';
-    insumos = insumos.filter(i => i.id !== insumoEmEdicao);
-    delete fichaTecnica[insumoEmEdicao];
-    fecharModalExcluir();
-    renderTabela();
-    toast(`"${nome}" removido do estoque.`);
-}
-
-// --------------------------------------------------------------------------
-// MODAL: VINCULAR INSUMO → PRODUTOS (Ficha Técnica)
-// --------------------------------------------------------------------------
-
-function abrirModalVincular(id) {
-    const insumo = insumos.find(i => i.id === id);
-    if (!insumo) return;
-    insumoEmEdicao = id;
-
-    // Cabeçalho do insumo
-    document.getElementById('vinc-nome').textContent    = insumo.nome;
-    document.getElementById('vinc-estoque').textContent =
-        `Estoque atual: ${fmt(insumo.qtdAtual)} ${insumo.unidade}`;
-
-    // Popular select de produtos
-    const sel = document.getElementById('vinc-produto-sel');
-    sel.innerHTML = '<option value="">Selecione um produto...</option>' +
-        produtos.map(p => `<option value="${p.id}">${p.nome} (${p.categoria})</option>`).join('');
-
-    // Unidade padrão baseada no insumo
-    document.getElementById('vinc-und-input').value = insumo.unidade;
-
-    renderVinculos();
-    document.getElementById('modalVincular').classList.add('open');
-}
-
-function fecharModalVincular() {
-    document.getElementById('modalVincular').classList.remove('open');
-}
-
-function renderVinculos() {
-    const lista = fichaTecnica[insumoEmEdicao] || [];
-    const container = document.getElementById('vinculosLista');
-
-    if (!lista.length) {
-        container.innerHTML = '<div class="vinculos-vazio"><i class="fas fa-unlink"></i> Nenhum produto vinculado ainda.</div>';
-        return;
-    }
-
-    container.innerHTML = lista.map((v, idx) => {
-        const prod = produtos.find(p => p.id === v.produtoId);
-        const nomeProd = prod ? prod.nome : `Produto #${v.produtoId}`;
-        return `
-        <div class="vinculo-row">
-            <span class="produto-nome"><i class="fas fa-burger" style="color:var(--text-muted);margin-right:6px;font-size:0.8rem"></i>${nomeProd}</span>
-            <span class="vinculo-qty">${v.quantidade} ${v.unidade}</span>
-            <span class="vinculo-und" style="font-size:0.75rem;color:var(--text-muted)">por unidade</span>
-            <button class="btn-remove-vinculo" onclick="removerVinculo(${idx})" title="Remover vínculo">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>`;
-    }).join('');
-}
-
-function adicionarVinculo() {
-    const prodId = parseInt(document.getElementById('vinc-produto-sel').value);
-    const qty    = parseFloat(document.getElementById('vinc-qty-input').value);
-    const und    = document.getElementById('vinc-und-input').value.trim();
-
-    if (!prodId) { toast('Selecione um produto.', 'err'); return; }
-    if (isNaN(qty) || qty <= 0) { toast('Informe uma quantidade válida.', 'err'); return; }
-    if (!und) { toast('Informe a unidade.', 'err'); return; }
-
-    // Evitar duplicata
-    if (!fichaTecnica[insumoEmEdicao]) fichaTecnica[insumoEmEdicao] = [];
-    const jaExiste = fichaTecnica[insumoEmEdicao].find(v => v.produtoId === prodId);
-    if (jaExiste) {
-        toast('Este produto já está vinculado a este insumo.', 'err');
-        return;
-    }
-
-    fichaTecnica[insumoEmEdicao].push({ produtoId: prodId, quantidade: qty, unidade: und });
-    document.getElementById('vinc-qty-input').value = '';
-    renderVinculos();
-    renderTabela(); // atualiza contador de vínculos na tabela
-    toast('Vínculo adicionado!');
-}
-
-function removerVinculo(idx) {
-    if (!fichaTecnica[insumoEmEdicao]) return;
-    fichaTecnica[insumoEmEdicao].splice(idx, 1);
-    renderVinculos();
-    renderTabela();
-    toast('Vínculo removido.');
-}
-
-// --------------------------------------------------------------------------
-// FUNÇÃO PÚBLICA: Verificar se há estoque suficiente para um pedido
-// Use no PDV antes de finalizar a venda.
-//
-// Parâmetro: itensCarrinho = [ { produtoId, quantidade } ]
-// Retorno: { ok: true } ou { ok: false, faltando: [ { insumoNome, falta, unidade } ] }
-// --------------------------------------------------------------------------
-
-function verificarEstoqueParaPedido(itensCarrinho) {
-    // Monta um mapa: insumoId → quantidade necessária total
-    const necessario = {};
-
-    itensCarrinho.forEach(item => {
-        // Para cada insumo vinculado ao produto
-        Object.entries(fichaTecnica).forEach(([insumoId, vinculos]) => {
-            const vinculo = vinculos.find(v => v.produtoId === item.produtoId);
-            if (vinculo) {
-                const id = parseInt(insumoId);
-                necessario[id] = (necessario[id] || 0) + (vinculo.quantidade * item.quantidade);
-            }
-        });
-    });
-
-    const faltando = [];
-    Object.entries(necessario).forEach(([insumoId, qtdNecessaria]) => {
-        const insumo = insumos.find(i => i.id === parseInt(insumoId));
-        if (!insumo) return;
-        if (insumo.qtdAtual < qtdNecessaria) {
-            faltando.push({
-                insumoNome: insumo.nome,
-                disponivel: insumo.qtdAtual,
-                necessario: qtdNecessaria,
-                falta: qtdNecessaria - insumo.qtdAtual,
-                unidade: insumo.unidade,
-            });
-        }
-    });
-
-    return faltando.length ? { ok: false, faltando } : { ok: true };
-}
-
-// --------------------------------------------------------------------------
-// FUNÇÃO PÚBLICA: Debitar estoque após venda confirmada
-// Use no PDV no confirmarPagamento(), antes do fetch para o back-end.
-//
-// Parâmetro: itensCarrinho = [ { produtoId, quantidade } ]
-// --------------------------------------------------------------------------
-
-// ==========================================================================
-// 🔥 NOVAS FUNÇÕES PARA SINCRONIZAR COM O BACK-END
-// ==========================================================================
-
-// Função para debitar estoque diretamente no banco de dados via API
-async function debitarEstoqueNoBanco(itensCarrinho) {
-    // payload estruturado: [ { produtoId: 1, quantidade: 2 }, ... ]
-    const payload = itensCarrinho.map(item => ({
-        produtoId: item.id,
-        quantidade: item.qtd
-    }));
+async function confirmarExcluir() {
+    if (insumoEmEdicaoId === null) return;
 
     try {
-        const response = await fetch('/api/estoque/debitar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+        const response = await fetch(`/api/estoque/${insumoEmEdicaoId}`, {
+            method: 'DELETE'
         });
 
-        if (!response.ok) {
-            const erroTexto = await response.text();
-            console.error("Falha ao debitar estoque:", erroTexto);
-            toast("Erro ao debitar estoque no servidor!", "err");
-            return false;
+        if (response.ok) {
+            toast('Insumo removido com sucesso!');
+            fecharModalExcluir();
+            carregarInsumosDoBanco();
+        } else {
+            const txtErro = await response.text();
+            alert("Erro ao excluir: " + txtErro);
         }
-        
-        toast("Estoque atualizado com sucesso!");
-        return true;
     } catch (error) {
-        console.error("Erro de comunicação ao atualizar estoque:", error);
-        toast("Erro de conexão com o servidor!", "err");
-        return false;
-    }
-}
-
-// Função para debitar estoque localmente (fallback/mock)
-function debitarEstoqueLocal(itensCarrinho) {
-    itensCarrinho.forEach(item => {
-        Object.entries(fichaTecnica).forEach(([insumoId, vinculos]) => {
-            const vinculo = vinculos.find(v => v.produtoId === item.produtoId);
-            if (vinculo) {
-                const insumo = insumos.find(i => i.id === parseInt(insumoId));
-                if (insumo) {
-                    insumo.qtdAtual -= vinculo.quantidade * item.quantidade;
-                    if (insumo.qtdAtual < 0) insumo.qtdAtual = 0;
-                }
-            }
-        });
-    });
-    renderTabela();
-}
-
-// Função principal de debitar estoque (tenta banco primeiro, fallback local)
-async function debitarEstoque(itensCarrinho) {
-    // Tenta debitar no banco de dados real
-    const sucesso = await debitarEstoqueNoBanco(itensCarrinho);
-    
-    if (sucesso) {
-        // Se sucesso no banco, também atualiza localmente para manter consistência
-        debitarEstoqueLocal(itensCarrinho);
-    } else {
-        console.warn("Usando fallback local para debitar estoque");
-        debitarEstoqueLocal(itensCarrinho);
-        toast("Estoque atualizado apenas localmente (modo offline)", "err");
+        console.error("Erro ao deletar:", error);
     }
 }
 
 // --------------------------------------------------------------------------
-// FILTROS
+// INICIALIZAÇÃO
 // --------------------------------------------------------------------------
-
-function setFiltroStatus(val) {
-    filtroStatus = val;
-    document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector(`.pill-btn[data-status="${val}"]`).classList.add('active');
-    renderTabela();
-}
-
-// --------------------------------------------------------------------------
-// INIT
-// --------------------------------------------------------------------------
-
 document.addEventListener('DOMContentLoaded', () => {
-    renderTabela();
+    carregarInsumosDoBanco(); // Puxa os dados reais assim que a página abre
 
-    // Busca
-    document.getElementById('searchInsumo').addEventListener('input', e => {
-        termoBusca = e.target.value;
-        renderTabela();
-    });
-
-    // Filtro select
-    document.getElementById('filtroStatus').addEventListener('change', e => {
-        filtroStatus = e.target.value;
-        renderTabela();
-    });
-
-    // Fechar modais clicando no overlay
-    ['modalInsumo', 'modalExcluir', 'modalVincular'].forEach(id => {
-        document.getElementById(id).addEventListener('click', e => {
-            if (e.target.id === id) {
-                document.getElementById(id).classList.remove('open');
-            }
+    const searchInsumo = document.getElementById('searchInsumo');
+    if (searchInsumo) {
+        searchInsumo.addEventListener('input', e => {
+            termoBusca = e.target.value;
+            renderTabela();
         });
-    });
+    }
+
+    const filtroStatusSel = document.getElementById('filtroStatus');
+    if (filtroStatusSel) {
+        filtroStatusSel.addEventListener('change', e => {
+            filtroStatus = e.target.value;
+            renderTabela();
+        });
+    }
 });

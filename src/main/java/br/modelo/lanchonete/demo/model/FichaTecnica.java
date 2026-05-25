@@ -3,6 +3,7 @@ package br.modelo.lanchonete.demo.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "ficha_tecnica")
 public class FichaTecnica {
 
     @Id
@@ -11,19 +12,16 @@ public class FichaTecnica {
 
     @ManyToOne
     @JoinColumn(name = "insumo_id")
-    private Produto insumo; 
+    private Estoque insumo;
 
     private Double quantidade;
     private String unidade;
 
-    public FichaTecnica() {}
-
-    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Produto getInsumo() { return insumo; }
-    public void setInsumo(Produto insumo) { this.insumo = insumo; }
+    public Estoque getInsumo() { return insumo; }
+    public void setInsumo(Estoque insumo) { this.insumo = insumo; }
 
     public Double getQuantidade() { return quantidade; }
     public void setQuantidade(Double quantidade) { this.quantidade = quantidade; }

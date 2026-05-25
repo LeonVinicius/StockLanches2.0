@@ -39,6 +39,18 @@ public class Produto {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "produto_id")
     private List<FichaTecnica> fichaTecnica = new ArrayList<>();
+    
+ // Em Produto.java, adicione:
+    @Column(name = "unidade_medida")
+    private String unidadeMedida = "un";
+
+    public String getUnidadeMedida() {
+        return unidadeMedida;
+    }
+
+    public void setUnidadeMedida(String unidadeMedida) {
+        this.unidadeMedida = unidadeMedida;
+    }
 
     // Construtores
     public Produto() {}

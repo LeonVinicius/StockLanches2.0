@@ -13,70 +13,65 @@
 
 <div class="dashboard-layout">
 
-    <!-- ===== SIDEBAR ===== -->
-<aside class="sidebar">
-    <div>
-        <!-- Logo -->
-        <div class="logo-container">
-            <i class="fas fa-burger logo-icon" style="width:34px;height:34px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;"></i>
-            <div class="logo-text">
-                <h1>StockLanches</h1>
-                <p>SaaS v3.0</p>
+    <aside class="sidebar">
+        <div>
+            <div class="logo-container">
+                <i class="fas fa-burger logo-icon" style="width:34px;height:34px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;"></i>
+                <div class="logo-text">
+                    <h1>StockLanches</h1>
+                    <p>SaaS v3.0</p>
+                </div>
             </div>
-        </div>
- 
-        <!-- User -->
-        <div class="user-profile-card">
-            <p class="user-profile-label">Usuário Logado</p>
-            <p class="user-profile-email" th:text="${emailUsuario}">email@exemplo.com</p>
-        </div>
- 
-        <!-- Nav -->
-        <nav class="menu-nav">
-            <span class="menu-label">Operacional</span>
- 
-            <a th:href="@{/pdv}" class="menu-item"
-               th:classappend="${activePage == 'pdv'} ? 'active'">
-                <i class="fas fa-desktop"></i> PDV
-            </a>
- 
-            <a th:href="@{/consultar}" class="menu-item"
-               th:classappend="${activePage == 'estoque'} ? 'active'">
-                <i class="fas fa-boxes-stacked"></i> Estoque
-            </a>
- 
-            <a th:href="@{/produtos}" class="menu-item"
-               th:classappend="${activePage == 'produtos'} ? 'active'">
-                <i class="fas fa-burger"></i> Produtos
-            </a>
- 
-            <span class="menu-label">Gestão</span>
- 
-            <a th:href="@{/estatisticas}" class="menu-item"
-               th:classappend="${activePage == 'home'} ? 'active'">
-                <i class="fas fa-chart-line"></i> Estatísticas
-            </a>
- 
-            <a th:href="@{/historico}" class="menu-item"
-               th:classappend="${activePage == 'historico'} ? 'active'">
-                <i class="fas fa-history"></i> Histórico
-            </a>
- 
-            <a th:href="@{/configuracoes}" class="menu-item"
-               th:classappend="${activePage == 'configuracoes'} ? 'active'">
-                <i class="fas fa-cog"></i> Ajustes
-            </a>
-        </nav>
-    </div>
- 
-    <div>
-        <a th:href="@{/logout}" class="menu-item btn-logout">
-            <i class="fas fa-sign-out-alt"></i> Sair
-        </a>
-    </div>
-</aside>
 
-    <!-- ===== MAIN ===== -->
+            <div class="user-profile-card">
+                <p class="user-profile-label">Usuário Logado</p>
+                <p class="user-profile-email" th:text="${emailUsuario}">email@exemplo.com</p>
+            </div>
+
+            <nav class="menu-nav">
+                <span class="menu-label">Operacional</span>
+
+                <a th:href="@{/pdv}" class="menu-item"
+                   th:classappend="${activePage == 'pdv'} ? 'active'">
+                    <i class="fas fa-desktop"></i> PDV
+                </a>
+
+                <a th:href="@{/consultar}" class="menu-item"
+                   th:classappend="${activePage == 'estoque'} ? 'active'">
+                    <i class="fas fa-boxes-stacked"></i> Estoque
+                </a>
+
+                <a th:href="@{/produtos}" class="menu-item"
+                   th:classappend="${activePage == 'produtos'} ? 'active'">
+                    <i class="fas fa-burger"></i> Produtos
+                </a>
+
+                <span class="menu-label">Gestão</span>
+
+                <a th:href="@{/estatisticas}" class="menu-item"
+                   th:classappend="${activePage == 'home'} ? 'active'">
+                    <i class="fas fa-chart-line"></i> Estatísticas
+                </a>
+
+                <a th:href="@{/historico}" class="menu-item"
+                   th:classappend="${activePage == 'historico'} ? 'active'">
+                    <i class="fas fa-history"></i> Histórico
+                </a>
+
+                <a th:href="@{/configuracoes}" class="menu-item"
+                   th:classappend="${activePage == 'configuracoes'} ? 'active'">
+                    <i class="fas fa-cog"></i> Ajustes
+                </a>
+            </nav>
+        </div>
+
+        <div>
+            <a th:href="@{/logout}" class="menu-item btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </a>
+        </div>
+    </aside>
+
     <main class="main-content">
 
         <header>
@@ -84,7 +79,6 @@
             <p>Gerencie os insumos e vincule-os ao cardápio</p>
         </header>
 
-        <!-- CARDS RESUMO -->
         <div class="estoque-summary">
             <div class="summary-card">
                 <div class="summary-card-icon blue"><i class="fas fa-boxes-stacked"></i></div>
@@ -109,7 +103,6 @@
             </div>
         </div>
 
-        <!-- TOOLBAR -->
         <div class="estoque-toolbar">
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
@@ -128,7 +121,6 @@
             </button>
         </div>
 
-        <!-- TABELA -->
         <div class="table-wrapper">
             <table class="stock-table">
                 <thead>
@@ -142,61 +134,13 @@
                     </tr>
                 </thead>
                 <tbody id="tbodyInsumos">
-                    <!-- Preenchido via JS (mock) ou via Thymeleaf (veja comentário abaixo) -->
                 </tbody>
             </table>
         </div>
 
-        <!--
-        ============================================================
-        NOTA PARA INTEGRAÇÃO COM THYMELEAF + SPRING BOOT:
-        Quando o back-end estiver pronto, substitua o tbody acima por:
-
-        <tbody>
-            <tr th:each="insumo, stat : ${insumos}">
-                <td class="td-id" th:text="'#' + ${#strings.leftPad(insumo.id, 3, '0')}"></td>
-                <td class="td-nome" th:text="${insumo.nome}"></td>
-                <td th:text="${insumo.qtdAtual + ' ' + insumo.unidade}"></td>
-                <td th:text="${insumo.unidade}"></td>
-                <td>
-                    <span class="status-badge"
-                          th:classappend="${insumo.status}"
-                          th:text="${insumo.statusLabel}"></span>
-                </td>
-                <td class="td-acoes">
-                    <div class="btn-acoes-group">
-                        <button class="btn-icon green"
-                                th:onclick="|abrirModalVincular(${insumo.id})|">
-                            <i class="fas fa-link"></i>
-                        </button>
-                        <button class="btn-icon blue"
-                                th:onclick="|abrirModalEditar(${insumo.id})|">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                        <button class="btn-icon red"
-                                th:onclick="|abrirModalExcluir(${insumo.id})|">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-
-        E inicialize os arrays no JS via:
-        <script th:inline="javascript">
-            insumos = /*[[${insumosJson}]]*/ [];
-            produtos = /*[[${produtosJson}]]*/ [];
-            fichaTecnica = /*[[${fichaTecnicaJson}]]*/ {};
-        </script>
-        ============================================================
-        -->
-
     </main>
 </div>
 
-<!-- ===================================================
-     MODAL: ADICIONAR / EDITAR INSUMO
-     =================================================== -->
 <div class="modal-overlay" id="modalInsumo">
     <div class="modal-box">
         <div class="modal-header">
@@ -244,9 +188,6 @@
     </div>
 </div>
 
-<!-- ===================================================
-     MODAL: CONFIRMAR EXCLUSÃO
-     =================================================== -->
 <div class="modal-overlay" id="modalExcluir">
     <div class="modal-box" style="width:420px">
         <div class="modal-header">
@@ -274,70 +215,6 @@
     </div>
 </div>
 
-<!-- ===================================================
-     MODAL: VINCULAR INSUMO → PRODUTOS (Ficha Técnica)
-     =================================================== -->
-<div class="modal-overlay" id="modalVincular">
-    <div class="modal-box wide">
-        <div class="modal-header">
-            <h3><i class="fas fa-link" style="color:var(--accent-blue);margin-right:8px"></i>Ficha Técnica — Vínculos do Insumo</h3>
-            <button class="btn-close-modal" onclick="fecharModalVincular()">×</button>
-        </div>
-
-        <div class="modal-body">
-
-            <!-- Insumo em destaque -->
-            <div class="insumo-destaque">
-                <i class="fas fa-box"></i>
-                <div class="insumo-destaque-info">
-                    <h4 id="vinc-nome">—</h4>
-                    <p id="vinc-estoque">—</p>
-                </div>
-            </div>
-
-            <!-- Explicação -->
-            <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:1rem;line-height:1.5">
-                <i class="fas fa-info-circle" style="color:var(--accent-blue)"></i>
-                Defina <strong>quanto deste insumo</strong> é consumido a cada unidade vendida de cada produto.
-                Ao finalizar uma venda no PDV, o sistema debitará automaticamente essas quantidades do estoque.
-            </p>
-
-            <!-- Lista de vínculos existentes -->
-            <div class="vinculos-lista" id="vinculosLista"></div>
-
-            <!-- Formulário para adicionar novo vínculo -->
-            <div class="add-vinculo-form">
-                <h5><i class="fas fa-plus-circle"></i> Adicionar vínculo</h5>
-                <div class="form-row-3">
-                    <div class="form-group" style="margin-bottom:0;grid-column:span 1">
-                        <select id="vinc-produto-sel">
-                            <option value="">Produto...</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-bottom:0">
-                        <input type="number" id="vinc-qty-input" placeholder="Quantidade" min="0.01" step="0.01">
-                    </div>
-                    <div class="form-group" style="margin-bottom:0">
-                        <input type="text" id="vinc-und-input" placeholder="Unidade (g, un...)">
-                    </div>
-                </div>
-                <button class="btn-add-vinculo" onclick="adicionarVinculo()">
-                    <i class="fas fa-plus"></i> Adicionar Vínculo
-                </button>
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="fecharModalVincular()">Cancelar</button>
-            <button class="btn-primary" onclick="fecharModalVincular(); toast('Vínculos salvos!')">
-                <i class="fas fa-check"></i> Concluir
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- TOAST -->
 <div class="toast" id="toast">
     <i class="fas fa-check-circle ok"></i>
     <span>Operação realizada com sucesso!</span>

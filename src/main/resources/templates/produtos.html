@@ -7,8 +7,9 @@
     <link rel="stylesheet" th:href="@{/css/estilo-clean.css}">
     <link rel="stylesheet" th:href="@{/css/produtos.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}">
+    <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : ''}">
     <style>
-        /* CSS adicional para os botões do modal ficarem alinhados */
         .modal-footer-group {
             display: flex;
             justify-content: flex-end;
@@ -19,85 +20,90 @@
         .dropdown-item-insumo:hover {
             background-color: #f1f5f9 !important;
         }
+        .pill-btn {
+            border: 1px solid #cbd5e1;
+            background: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #64748b;
+        }
+        .pill-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
     </style>
 </head>
 <body>
 
 <div class="dashboard-layout">
     <aside class="sidebar">
-    <div>
-        <!-- Logo -->
-        <div class="logo-container">
-            <i class="fas fa-burger logo-icon" style="width:34px;height:34px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;"></i>
-            <div class="logo-text">
-                <h1>StockLanches</h1>
-                <p>SaaS v3.0</p>
+        <div>
+            <div class="logo-container">
+                <i class="fas fa-burger logo-icon" style="width:34px;height:34px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;"></i>
+                <div class="logo-text">
+                    <h1>StockLanches</h1>
+                    <p>SaaS v3.0</p>
+                </div>
             </div>
+     
+            <div class="user-profile-card">
+                <p class="user-profile-label">Usuário Logado</p>
+                <p class="user-profile-email" th:text="${emailUsuario}">email@exemplo.com</p>
+            </div>
+     
+            <nav class="menu-nav">
+                <span class="menu-label">Operacional</span>
+     
+                <a th:href="@{/pdv}" class="menu-item" th:classappend="${activePage == 'pdv'} ? 'active'">
+                    <i class="fas fa-desktop"></i> PDV
+                </a>
+     
+                <a th:href="@{/consultar}" class="menu-item" th:classappend="${activePage == 'estoque'} ? 'active'">
+                    <i class="fas fa-boxes-stacked"></i> Estoque
+                </a>
+     
+                <a th:href="@{/produtos}" class="menu-item" th:classappend="${activePage == 'produtos'} ? 'active'">
+                    <i class="fas fa-burger"></i> Produtos
+                </a>
+     
+                <span class="menu-label">Gestão</span>
+     
+                <a th:href="@{/estatisticas}" class="menu-item" th:classappend="${activePage == 'home'} ? 'active'">
+                    <i class="fas fa-chart-line"></i> Estatísticas
+                </a>
+     
+                <a th:href="@{/historico}" class="menu-item" th:classappend="${activePage == 'historico'} ? 'active'">
+                    <i class="fas fa-history"></i> Histórico
+                </a>
+     
+                <a th:href="@{/configuracoes}" class="menu-item" th:classappend="${activePage == 'configuracoes'} ? 'active'">
+                    <i class="fas fa-cog"></i> Ajustes
+                </a>
+            </nav>
         </div>
- 
-        <!-- User -->
-        <div class="user-profile-card">
-            <p class="user-profile-label">Usuário Logado</p>
-            <p class="user-profile-email" th:text="${emailUsuario}">email@exemplo.com</p>
+     
+        <div>
+            <a th:href="@{/logout}" class="menu-item btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </a>
         </div>
- 
-        <!-- Nav -->
-        <nav class="menu-nav">
-            <span class="menu-label">Operacional</span>
- 
-            <a th:href="@{/pdv}" class="menu-item"
-               th:classappend="${activePage == 'pdv'} ? 'active'">
-                <i class="fas fa-desktop"></i> PDV
-            </a>
- 
-            <a th:href="@{/consultar}" class="menu-item"
-               th:classappend="${activePage == 'estoque'} ? 'active'">
-                <i class="fas fa-boxes-stacked"></i> Estoque
-            </a>
- 
-            <a th:href="@{/produtos}" class="menu-item"
-               th:classappend="${activePage == 'produtos'} ? 'active'">
-                <i class="fas fa-burger"></i> Produtos
-            </a>
- 
-            <span class="menu-label">Gestão</span>
- 
-            <a th:href="@{/estatisticas}" class="menu-item"
-               th:classappend="${activePage == 'home'} ? 'active'">
-                <i class="fas fa-chart-line"></i> Estatísticas
-            </a>
- 
-            <a th:href="@{/historico}" class="menu-item"
-               th:classappend="${activePage == 'historico'} ? 'active'">
-                <i class="fas fa-history"></i> Histórico
-            </a>
- 
-            <a th:href="@{/configuracoes}" class="menu-item"
-               th:classappend="${activePage == 'configuracoes'} ? 'active'">
-                <i class="fas fa-cog"></i> Ajustes
-            </a>
-        </nav>
-    </div>
- 
-    <div>
-        <a th:href="@{/logout}" class="menu-item btn-logout">
-            <i class="fas fa-sign-out-alt"></i> Sair
-        </a>
-    </div>
-</aside>
+    </aside>
 
     <main class="main-content">
         <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
             <h1>Cardápio & Ficha Técnica</h1>
             <div style="display:flex; gap:10px;">
-                <button class="btn-submit" style="background-color: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1;" onclick="abrirModalCategoria()">+ Nova Categoria</button>
-                <button class="btn-submit" onclick="abrirModalProduto(null)">+ Novo Produto</button>
+                <button type="button" class="btn-submit" style="background-color: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1;" onclick="abrirModalCategoria()">+ Nova Categoria</button>
+                <button type="button" class="btn-submit" onclick="abrirModalProduto(null)">+ Novo Produto</button>
             </div>
         </header>
 
         <div class="card-grid">
             <div class="product-item-card" th:each="produto : ${produtos}">
-                
                 <div class="product-img-container" style="width: 100%; height: 140px; overflow: hidden; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center;">
                     <img th:if="${produto.imagemBase64 != null}" th:src="${produto.imagemBase64}" style="width: 100%; height: 100%; object-fit: cover;">
                     <i th:if="${produto.imagemBase64 == null}" class="fas fa-burger" style="font-size: 2.5rem; color: #94a3b8;"></i>
@@ -109,7 +115,7 @@
                 <div class="ficha-lista" style="background: #f8fafc; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.85rem;">
                     <strong style="color: #475569; display: block; margin-bottom: 5px;">Ficha Técnica (Abate Estoque):</strong>
                     <div th:each="item : ${produto.fichaTecnica}" style="display: flex; justify-content: space-between; color: #64748b; margin-bottom: 3px;">
-                        <span th:text="${item.insumo.nome}">Ingrediente</span>
+                        <span th:text="${item.insumoNome}">Ingrediente</span>
                         <span th:text="'- ' + ${item.quantidade} + ' ' + ${item.unidade}">1 un</span>
                     </div>
                     <div th:if="${#lists.isEmpty(produto.fichaTecnica)}" style="color: #94a3b8; font-style: italic;">
@@ -117,7 +123,7 @@
                     </div>
                 </div>
                 
-                <button class="edit-btn" style="width:100%" th:onclick="'abrirModalEditarProduto(' + ${produto.id} + ')'">Editar Ficha</button>
+                <button type="button" class="edit-btn" style="width:100%" th:onclick="'abrirModalEditarProduto(' + ${produto.id} + ')'">Editar Ficha</button>
             </div>
         </div>
     </main>
@@ -128,15 +134,14 @@
         
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h3 id="modalProdutoTitulo" style="margin:0; font-weight: 700;">Novo Produto</h3>
-            <button onclick="fecharModalProduto()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color: #94a3b8;">&times;</button>
+            <button type="button" onclick="fecharModalProduto()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color: #94a3b8;">&times;</button>
         </div>
 
         <label style="font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 5px; display: block;"><i class="far fa-image"></i> Imagem do Produto</label>
         <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
-            <div style="flex: 1; border: 2px dashed #cbd5e1; padding: 25px 20px; text-align: center; border-radius: 12px; cursor: pointer; background: #f8fafc; transition: 0.2s;" onclick="document.getElementById('fileInput').click()">
+            <div style="flex: 1; border: 2px dashed #cbd5e1; padding: 25px 20px; text-align: center; border-radius: 12px; cursor: pointer; background: #f8fafc;" onclick="document.getElementById('fileInput').click()">
                 <i class="fas fa-cloud-upload-alt" style="font-size: 1.8rem; color: #3b82f6;"></i>
                 <p style="font-size: 0.8rem; color: #64748b; margin-top: 8px; font-weight: 500;">Clique para fazer upload</p>
-                <span style="font-size: 0.7rem; color: #94a3b8;">PNG, JPG ou WEBP (máx. 2MB)</span>
                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="previewImagem(this)">
             </div>
             <div id="previewContainer" style="width: 105px; height: 105px; border: 1px solid #e2e8f0; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; overflow: hidden; flex-shrink: 0;">
@@ -148,7 +153,7 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
             <div class="form-group">
                 <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Nome do Produto *</label>
-                <input type="text" id="prodNome" placeholder="Ex: X-Burger Clássico" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; margin-top: 4px;">
+                <input type="text" id="prodNome" placeholder="Ex: X-Burger" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; margin-top: 4px;">
             </div>
             <div class="form-group">
                 <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Categoria *</label>
@@ -158,54 +163,41 @@
             </div>
         </div>
 
-      <div class="form-group" style="margin-top:15px;">
-    <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Preço de Venda (R$) *</label>
-    <input type="number" id="prodPreco" value="0" step="0.01" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; margin-top: 4px;">
-</div>
-
-<!-- 🔥 NOVO: Toggle para ativar/desativar Ficha Técnica -->
-<div class="form-group" style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
-    <input type="checkbox" id="toggleFicha" onchange="toggleAreaFicha(this.checked)" style="width: 20px; height: 20px; cursor: pointer;">
-    <label for="toggleFicha" style="font-weight: 600; color: #1e293b; cursor: pointer;">
-        <i class="fas fa-link"></i> Ativar controle por Ficha Técnica (Consumo automático de insumos)
-    </label>
-</div>
-
-<!-- 🔥 Área da Ficha Técnica (será escondida se o toggle estiver desligado) -->
-<div id="areaFichaTecnica" style="display: none; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-    <h5 style="margin: 0 0 4px 0; font-size: 0.95rem; font-weight: 700; color: #1e293b;">Ficha Técnica - Ingredientes</h5>
-    <p style="font-size: 0.78rem; color: #64748b; margin: 0 0 12px 0;">Vincule insumos do estoque para dedução automática</p>
-    
-    <div style="display: flex; gap: 5px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px;">
-        <button type="button" class="pill-btn active" id="btn-filter-todos" style="padding: 4px 10px; font-size: 0.75rem;" onclick="filtrarTipoEstoque('todos')">Todos</button>
-        <button type="button" class="pill-btn" id="btn-filter-un" style="padding: 4px 10px; font-size: 0.75rem;" onclick="filtrarTipoEstoque('un')">Unidades</button>
-        <button type="button" class="pill-btn" id="btn-filter-g" style="padding: 4px 10px; font-size: 0.75rem;" onclick="filtrarTipoEstoque('g')">Pesáveis (g)</button>
-        <button type="button" class="pill-btn" id="btn-filter-ml" style="padding: 4px 10px; font-size: 0.75rem;" onclick="filtrarTipoEstoque('ml')">Líquidos (ml)</button>
-    </div>
-
-    <div style="display: flex; gap: 8px; margin-bottom: 15px; position: relative;">
-        <div style="position: relative; flex: 1;">
-            <i class="fas fa-search" style="position: absolute; left: 12px; top: 12px; color: #94a3b8; font-size: 0.9rem;"></i>
-            <input type="text" id="buscaIngredienteInput" placeholder="Buscar ingrediente do estoque..." 
-                   style="width:100%; padding: 10px 10px 10px 35px; border:1px solid #cbd5e1; border-radius:10px; font-size: 0.9rem;"
-                   oninput="buscarIngredientesDoEstoque(this.value)">
-            
-            <div id="sugestoesIngredientes" style="display:none; position:absolute; top:100%; left:0; width:100%; background:white; border:1px solid #cbd5e1; border-radius:8px; z-index:2000; max-height:180px; overflow-y:auto; box-shadow:0 4px 6px rgba(0,0,0,0.05);"></div>
+        <div class="form-group" style="margin-top:15px;">
+            <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Preço de Venda (R$) *</label>
+            <input type="number" id="prodPreco" value="0" step="0.01" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; margin-top: 4px;">
         </div>
-        
-        <button type="button" onclick="confirmarAdicaoInsumoBotao()" 
-                style="padding: 10px 15px; background: #2563eb; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px;">
-            <i class="fas fa-plus"></i> Adicionar
-        </button>
-    </div>
-    
-    <div id="listaIngredientes" style="margin-bottom:15px; display: flex; flex-direction: column; gap: 8px;"></div>
-</div>
+
+        <div class="form-group" style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="toggleFicha" onchange="toggleAreaFicha(this.checked)" style="width: 20px; height: 20px; cursor: pointer;">
+            <label for="toggleFicha" style="font-weight: 600; color: #1e293b; cursor: pointer;"><i class="fas fa-link"></i> Ativar controle por Ficha Técnica</label>
+        </div>
+
+        <div id="areaFichaTecnica" style="display: none; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+            <h5 style="margin: 0 0 4px 0; font-size: 0.95rem; font-weight: 700; color: #1e293b;">Ficha Técnica - Ingredientes</h5>
+            <p style="font-size: 0.78rem; color: #64748b; margin: 0 0 12px 0;">Vincule insumos do estoque</p>
+            
+            <div style="display: flex; gap: 5px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px;">
+                <button type="button" class="pill-btn active" id="btn-filter-todos" onclick="filtrarTipoEstoque('todos')">Todos</button>
+                <button type="button" class="pill-btn" id="btn-filter-un" onclick="filtrarTipoEstoque('un')">Unidades</button>
+                <button type="button" class="pill-btn" id="btn-filter-g" onclick="filtrarTipoEstoque('g')">Pesáveis (g)</button>
+                <button type="button" class="pill-btn" id="btn-filter-ml" onclick="filtrarTipoEstoque('ml')">Líquidos (ml)</button>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 15px; position: relative;">
+                <div style="position: relative; flex: 1;">
+                    <i class="fas fa-search" style="position: absolute; left: 12px; top: 12px; color: #94a3b8; font-size: 0.9rem;"></i>
+                    <input type="text" id="buscaIngredienteInput" placeholder="Buscar ingrediente..." style="width:100%; padding: 10px 10px 10px 35px; border:1px solid #cbd5e1; border-radius:10px; font-size: 0.9rem;" oninput="buscarIngredientesDoEstoque(this.value)">
+                    <div id="sugestoesIngredientes" style="display:none; position:absolute; top:100%; left:0; width:100%; background:white; border:1px solid #cbd5e1; border-radius:8px; z-index:2000; max-height:180px; overflow-y:auto; box-shadow:0 4px 6px rgba(0,0,0,0.05);"></div>
+                </div>
+                <button type="button" onclick="confirmarAdicaoInsumoBotao()" style="padding: 10px 15px; background: #2563eb; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px;"><i class="fas fa-plus"></i> Vincular</button>
+            </div>
+            
+            <div id="listaIngredientes" style="margin-bottom:15px; display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
 
         <div class="modal-footer-group">
-            <button type="button" id="btnExcluirProduto" onclick="deletarProduto()" style="display:none; padding:10px 20px; border:none; background:#fee2e2; color:#ef4444; border-radius:8px; cursor:pointer; font-weight: 700; margin-right: auto;">
-                <i class="fas fa-trash"></i> Excluir Produto
-            </button>
+            <button type="button" id="btnExcluirProduto" onclick="deletarProduto()" style="display:none; padding:10px 20px; border:none; background:#fee2e2; color:#ef4444; border-radius:8px; cursor:pointer; font-weight: 700; margin-right: auto;"><i class="fas fa-trash"></i> Excluir</button>
             <button type="button" onclick="fecharModalProduto()" style="padding:10px 20px; border:none; background:#f1f5f9; border-radius:8px; cursor:pointer; font-weight: 600; color: #475569;">Cancelar</button>
             <button type="button" onclick="salvarProduto()" class="btn-submit" style="padding:10px 30px; border:none; background:#2563eb; color:white; border-radius:8px; cursor:pointer; font-weight: 700;">Cadastrar</button>
         </div>
@@ -215,44 +207,107 @@
 <div id="modalCategoria" class="modal-overlay" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1100;">
     <div class="modal-box" style="background:#fff; padding:25px; border-radius:16px; width:380px;">
         <h3>Gerenciar Categorias</h3>
-        
         <div class="form-group" style="margin: 15px 0 5px 0;">
-            <label style="font-size: 0.8rem; color: var(--text-secondary);">Criar Nova:</label>
             <div style="display:flex; gap:5px; margin-top:5px;">
-                <input type="text" id="novaCatNome" placeholder="Ex: Acompanhamentos" style="flex:1; padding:10px; border:1px solid #cbd5e1; border-radius:8px;">
-                <button onclick="salvarNovaCategoria()" style="padding:10px 15px; border:none; background:#2563eb; color:white; border-radius:8px; cursor:pointer;"><i class="fas fa-plus"></i></button>
+                <input type="text" id="cadastroCategoriaNomeUnico" placeholder="Ex: Bebidas" style="flex:1; padding:10px; border:1px solid #cbd5e1; border-radius:8px;">
+                <button type="button" onclick="salvarNovaCategoriaExplicita()" style="padding:10px 15px; border:none; background:#2563eb; color:white; border-radius:8px; cursor:pointer;"><i class="fas fa-plus"></i></button>
             </div>
         </div>
-
         <div style="margin: 20px 0 15px 0;">
-            <label style="font-size: 0.8rem; color: var(--text-secondary);">Categorias Existentes:</label>
-            <div style="max-height: 150px; overflow-y: auto; margin-top:5px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px;">
+            <div style="max-height: 150px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px;">
                 <div th:each="cat : ${categorias}" style="display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid #f1f5f9;">
-                    <span th:text="${cat.nome}" style="font-size:0.9rem; flex:1;">Nome</span>
-                    <button th:onclick="'deletarCategoria(' + ${cat.id} + ')'" style="background:none; border:none; color:#ef4444; cursor:pointer; padding:2px 8px; font-size:1rem;" title="Excluir Categoria">
-                        <i class="fas fa-trash-can"></i>
-                    </button>
-                </div>
-                <div th:if="${#lists.isEmpty(categorias)}" style="text-align:center; padding:10px; color:var(--text-muted); font-size:0.85rem;">
-                    Nenhuma categoria criada.
+                    <span th:text="${cat.nome}" style="font-size:0.9rem;">Nome</span>
+                    <button type="button" th:onclick="'deletarCategoria(' + ${cat.id} + ')'" style="background:none; border:none; color:#ef4444; cursor:pointer;"><i class="fas fa-trash-can"></i></button>
                 </div>
             </div>
         </div>
-
-        <div style="display:flex; justify-content:flex-end;">
-            <button onclick="fecharModalCategoria()" style="padding:8px 15px; border:none; background:#f1f5f9; border-radius:8px; cursor:pointer; width:100%;">Fechar Janela</button>
-        </div>
+        <button type="button" onclick="fecharModalCategoria()" style="padding:8px 15px; border:none; background:#f1f5f9; border-radius:8px; cursor:pointer; width:100%;">Fechar</button>
     </div>
 </div>
 
 <script>
     let imagemStringGlobal = null;
     let ingredientesSelecionados = [];
-    let idProdutoEmEdicao = null; // null = Cadastro, Número = Editando Produto Existente
-    let insumoSelecionadoDropdown = null; // Cache temporário do clique na lista flutuante
+    let idProdutoEmEdicao = null;
+    let insumoSelecionadoDropdown = null;
     let filtroUnidadeAtivo = 'todos';
 
-    // CONTROLE DE ABERTURA DO MODAL DE PRODUTO
+    // --------------------------------------------------------------------------
+    // AMARRAÇÃO SEGURA DE EVENTOS (Roda assim que a página termina de carregar)
+    // --------------------------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnCat = document.getElementById('btnSalvarCategoriaFisica');
+        if (btnCat) {
+            btnCat.addEventListener('click', (e) => {
+                e.preventDefault();
+                salvarNovaCategoriaExplicita();
+            });
+        }
+    });
+
+    // --------------------------------------------------------------------------
+    // GESTÃO DE CATEGORIAS (Conversa diretamente com o CategoriaRequestDTO)
+    // --------------------------------------------------------------------------
+    async function salvarNovaCategoriaExplicita() {
+        console.log("[JS LOG] Função salvarNovaCategoriaExplicita acionada no clique!");
+        
+        const inputElement = document.getElementById('cadastroCategoriaNomeUnico');
+        const nomeCat = inputElement ? inputElement.value.trim() : '';
+        
+        if (!nomeCat) { 
+            alert("Por favor, digite um nome válido para a categoria!"); 
+            return; 
+        }
+
+        const csrfMeta = document.querySelector('meta[name="_csrf"]');
+        const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+        const headers = { 'Content-Type': 'application/json' };
+        
+        if (csrfMeta && csrfHeaderMeta && csrfMeta.content && csrfHeaderMeta.content) {
+            headers[csrfHeaderMeta.content] = csrfMeta.content;
+        }
+
+        console.log("[JS LOG] Enviando payload via Fetch para /api/categorias...");
+
+        try {
+            const response = await fetch('/api/categorias', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ nome: nomeCat }) 
+            });
+
+            if (response.ok) {
+                alert("Categoria criada com sucesso!");
+                window.location.reload();
+            } else {
+                const textErro = await response.text();
+                alert("Erro no servidor (Status " + response.status + "): " + textErro);
+            }
+        } catch (error) {
+            console.error("[JS LOG] Falha na requisição Fetch:", error);
+            alert("Erro de conexão ao tentar salvar categoria.");
+        }
+    }
+
+    async function deletarCategoria(id) {
+        if (!confirm('Excluir categoria? Produtos vinculados vão para "Geral".')) return;
+        try {
+            const response = await fetch('/api/categorias/' + id, { method: 'DELETE' });
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Erro: ' + await response.text());
+            }
+        } catch (e) {
+            alert('Erro de conexão.');
+        }
+    }
+
+    // --------------------------------------------------------------------------
+    // MODAIS E PRODUTOS
+    // --------------------------------------------------------------------------
+    function abrirProduto(id = null) { abrirModalProduto(id); } // Alias preventivo
+
     function abrirModalProduto(id = null) {
         idProdutoEmEdicao = id;
         const titulo = document.getElementById('modalProdutoTitulo');
@@ -260,16 +315,14 @@
         const btnSalvar = document.querySelector('#modalProduto .btn-submit');
         
         if (id === null) {
-            // Configuração para Novo Produto
             titulo.textContent = "Novo Produto";
             btnExcluir.style.display = "none";
-            btnSalvar.textContent = "Cadastrar";
+            if(btnSalvar) btnSalvar.textContent = "Cadastrar";
             limparFormularioProduto();
         } else {
-            // Configuração para Editar Produto Existente
             titulo.textContent = "Editar Ficha do Produto";
             btnExcluir.style.display = "block";
-            btnSalvar.textContent = "Salvar Alterações";
+            if(btnSalvar) btnSalvar.textContent = "Salvar Alterações";
         }
         document.getElementById('modalProduto').style.display = 'flex';
     }
@@ -285,145 +338,101 @@
     function limparFormularioProduto() {
         document.getElementById('prodNome').value = '';
         document.getElementById('prodPreco').value = '0';
+        document.getElementById('toggleFicha').checked = false;
+        toggleAreaFicha(false);
         document.getElementById('previewImg').src = '';
         document.getElementById('previewImg').style.display = 'none';
         document.getElementById('previewIcon').style.display = 'block';
         imagemStringGlobal = null;
         ingredientesSelecionados = [];
-        insumoSelecionadoDropdown = null;
-        renderizarListaIngredientes();
+        renderLista();
     }
 
-    // PREVIEW DE IMAGEM
     function previewImagem(input) {
         const file = input.files[0];
-        const previewImg = document.getElementById('previewImg');
-        const previewIcon = document.getElementById('previewIcon');
-        
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                previewImg.src = e.target.result;
-                previewImg.style.display = 'block';
-                previewIcon.style.display = 'none';
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('previewImg').style.display = 'block';
+                document.getElementById('previewIcon').style.display = 'none';
                 imagemStringGlobal = e.target.result;
             }
             reader.readAsDataURL(file);
         }
     }
 
-    // 🔥 NOVO: CARREGAR DADOS DO PRODUTO PARA EDICAO (CHAMADO PELO BOTÃO EDITAR FICHA)
     async function abrirModalEditarProduto(id) {
         abrirModalProduto(id);
         try {
             const response = await fetch('/api/produtos/' + id);
-            if (!response.ok) throw new Error("Erro ao buscar dados do produto");
+            if (!response.ok) throw new Error();
             const produto = await response.json();
             
-            // Preenche campos de texto
             document.getElementById('prodNome').value = produto.nome;
             document.getElementById('prodCat').value = produto.categoria;
             document.getElementById('prodPreco').value = produto.precoVenda;
             
-            // Preenche Imagem se houver
+            const possuiFicha = produto.fichaTecnica && produto.fichaTecnica.length > 0;
+            document.getElementById('toggleFicha').checked = possuiFicha;
+            toggleAreaFicha(possuiFicha);
+
             if (produto.imagemBase64) {
-                const previewImg = document.getElementById('previewImg');
-                previewImg.src = produto.imagemBase64;
-                previewImg.style.display = 'block';
+                document.getElementById('previewImg').src = produto.imagemBase64;
+                document.getElementById('previewImg').style.display = 'block';
                 document.getElementById('previewIcon').style.display = 'none';
                 imagemStringGlobal = produto.imagemBase64;
             }
             
-            // Preenche ingredientes mapeando do formato do banco
             ingredientesSelecionados = produto.fichaTecnica.map(item => ({
-                id: item.insumo.id,
-                nome: item.insumo.nome,
+                id: item.insumoId,
+                nome: item.insumoNome,
                 quantidade: item.quantidade,
                 unidade: item.unidade
             }));
             
-            renderizarListaIngredientes();
+            renderLista();
         } catch (error) {
-            console.error(error);
-            alert("Erro ao ler dados do produto para edição.");
+            alert("Erro ao ler dados.");
             fecharModalProduto();
         }
     }
 
-    // 🔥 NOVO: FILTRAR TIPO DE INSUMO PELAS PÍLULAS DE ATALHO
     function filtrarTipoEstoque(unidade) {
         filtroUnidadeAtivo = unidade;
-        // Altera estados visuais dos botões de filtro
         ['todos', 'un', 'g', 'ml'].forEach(u => {
-            document.getElementById('btn-filter-' + u).classList.remove('active');
+            const el = document.getElementById('btn-filter-' + u);
+            if(el) el.classList.remove('active');
         });
-        document.getElementById('btn-filter-' + unidade).classList.add('active');
-        
-        // Limpa e refaz a busca com o novo filtro ativo se houver texto digitado
+        const activeEl = document.getElementById('btn-filter-' + unidade);
+        if(activeEl) activeEl.classList.add('active');
         const texto = document.getElementById('buscaIngredienteInput').value;
         if(texto.trim()) buscarIngredientesDoEstoque(texto);
     }
 
-    // BUSCAR INGREDIENTES DO ESTOQUE REAIS VIA ENDPOINT
-   // 🔥 BUSCA COM AUTO-COMPLETE (BUSCA A PARTIR DE 2 LETRAS)
-async function buscarIngredientesDoEstoque(termo) {
-    const sugestoesDiv = document.getElementById('sugestoesIngredientes');
-    
-    // Só busca a partir de 2 letras para evitar muitas requisições
-    if (!termo || termo.trim().length < 2) {
-        sugestoesDiv.style.display = 'none';
-        return;
-    }
-    
-    try {
-        // 🔥 IMPORTANTE: Este endpoint /api/insumos/busca deve estar apontando 
-        // para a tabela de INSUMOS do seu sistema (matérias-primas)
-        const response = await fetch(`/api/insumos/busca?termo=${encodeURIComponent(termo)}`);
-        
-        if (!response.ok) {
-            console.error('Erro na resposta do servidor:', response.status);
+    async function buscarIngredientesDoEstoque(termo) {
+        const sugestoesDiv = document.getElementById('sugestoesIngredientes');
+        if (!termo || termo.trim().length < 2) {
+            sugestoesDiv.style.display = 'none';
             return;
         }
-        
-        let insumos = await response.json();
-        
-        // Se não encontrou nada
-        if (!insumos || insumos.length === 0) {
-            sugestoesDiv.innerHTML = `
-                <div style="padding: 12px; color: #94a3b8; font-size: 0.85rem; text-align: center; background: #f8fafc;">
-                    <i class="fas fa-search" style="margin-right: 5px;"></i> Nenhum insumo encontrado
+        try {
+            const response = await fetch(`/api/insumos/busca?termo=${encodeURIComponent(termo)}`);
+            if (!response.ok) return;
+            const insumos = await response.json();
+            
+            sugestoesDiv.innerHTML = insumos.map(insumo => `
+                <div class="dropdown-item-insumo" onclick="selecionarItemDropdown(${insumo.id}, '${insumo.nome.replace(/'/g, "\\'")}', '${insumo.unidade}')" 
+                     style="padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #e2e8f0; background: #fff; display: flex; justify-content: space-between; align-items: center;">
+                    <span><i class="fas fa-boxes" style="color:#94a3b8;margin-right:8px;"></i>${insumo.nome}</span>
+                    <span style="background:#f1f5f9; padding:2px 8px; border-radius:20px; font-size:0.75rem;">${insumo.unidade}</span>
                 </div>
-            `;
+            `).join('');
             sugestoesDiv.style.display = 'block';
-            return;
+        } catch (error) {
+            console.error(error);
         }
-        
-        // Renderiza as sugestões
-        sugestoesDiv.innerHTML = insumos.map(insumo => `
-            <div class="dropdown-item-insumo" onclick="selecionarItemDropdown(${insumo.id}, '${insumo.nome.replace(/'/g, "\\'")}', '${insumo.unidade}')" 
-                 style="padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #e2e8f0; background: #fff; transition: 0.15s; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 500; color: #334155;">
-                    <i class="fas fa-boxes" style="color: #94a3b8; margin-right: 8px; font-size: 0.75rem;"></i>
-                    ${insumo.nome}
-                </span>
-                <span style="color: #64748b; font-size: 0.75rem; background: #f1f5f9; padding: 2px 8px; border-radius: 20px; font-weight: 500;">
-                    ${insumo.unidade}
-                </span>
-            </div>
-        `).join('');
-        
-        sugestoesDiv.style.display = 'block';
-        
-    } catch (error) {
-        console.error('Erro ao buscar ingredientes:', error);
-        sugestoesDiv.innerHTML = `
-            <div style="padding: 12px; color: #ef4444; font-size: 0.85rem; text-align: center;">
-                <i class="fas fa-exclamation-triangle"></i> Erro ao conectar com o servidor
-            </div>
-        `;
-        sugestoesDiv.style.display = 'block';
     }
-}
 
     function selecionarItemDropdown(id, nome, unidade) {
         insumoSelecionadoDropdown = { id, nome, unidade };
@@ -431,34 +440,26 @@ async function buscarIngredientesDoEstoque(termo) {
         document.getElementById('sugestoesIngredientes').style.display = 'none';
     }
 
-    // 🔥 NOVO: ADICIONAR SELECIONADO CLICANDO NO BOTÃO EXPLÍCITO "+ ADICIONAR"
     function confirmarAdicaoInsumoBotao() {
-        if (!insumoSelecionadoDropdown) {
-            alert('Por favor, digite e selecione um ingrediente válido na lista primeiro!');
+        if (!insumoSelecionadoDropdown) return;
+        if (ingredientesSelecionados.some(ing => ing.id === insumoSelecionadoDropdown.id)) {
+            alert('Ingrediente já adicionado!');
             return;
         }
-        
-        const existe = ingredientesSelecionados.some(ing => ing.id === insumoSelecionadoDropdown.id);
-        if (existe) {
-            alert('Este ingrediente já consta na ficha técnica do produto!');
-            return;
-        }
-        
         ingredientesSelecionados.push({
             id: insumoSelecionadoDropdown.id,
             nome: insumoSelecionadoDropdown.nome,
             quantidade: 1,
             unidade: insumoSelecionadoDropdown.unidade
         });
-        
-        renderizarListaIngredientes();
+        renderLista();
         insumoSelecionadoDropdown = null;
         document.getElementById('buscaIngredienteInput').value = '';
     }
 
     function removerIngredienteDaLista(index) {
         ingredientesSelecionados.splice(index, 1);
-        renderizarListaIngredientes();
+        renderLista();
     }
 
     function atualizarQuantidadeIngrediente(index, novaQuantidade) {
@@ -467,147 +468,84 @@ async function buscarIngredientesDoEstoque(termo) {
         }
     }
 
-    function renderizarListaIngredientes() {
+    function renderLista() {
         const container = document.getElementById('listaIngredientes');
         if (!container) return;
-        
         if (ingredientesSelecionados.length === 0) {
-            container.innerHTML = `
-                <div style="text-align: center; padding: 20px; color: #94a3b8; border: 1px dashed #cbd5e1; border-radius: 12px; background:#fafafa;">
-                    <i class="fas fa-box-open" style="font-size: 1.8rem; margin-bottom: 6px; display: block; opacity: 0.6;"></i>
-                    Ficha limpa. Use o campo acima para vincular ingredientes do estoque.
-                </div>
-            `;
+            container.innerHTML = `<div style="text-align: center; padding: 20px; color: #94a3b8; border: 1px dashed #cbd5e1; border-radius: 12px;">Ficha limpa. Vincule ingredientes.</div>`;
             return;
         }
-        
         container.innerHTML = ingredientesSelecionados.map((ing, index) => `
-            <div style="display:flex; justify-content: space-between; align-items:center; padding: 10px 14px; background:#fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
-                <span style="font-weight: 500; color: #334155; font-size: 0.9rem; flex: 2;">${ing.nome}</span>
+            <div style="display:flex; justify-content: space-between; align-items:center; padding: 10px 14px; background:#fff; border: 1px solid #e2e8f0; border-radius: 12px;">
+                <span style="font-weight: 500; font-size: 0.9rem;">${ing.nome}</span>
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <input type="number" value="${ing.quantidade}" step="0.1" min="0.01" 
-                           onchange="atualizarQuantidadeIngrediente(${index}, this.value)"
-                           style="width:65px; padding:6px; border: 1px solid #cbd5e1; border-radius: 8px; text-align: center; font-weight: 600; color: #1e293b;">
-                    <span style="color: #64748b; font-size: 0.85rem; width: 30px; font-weight:500;">${ing.unidade}</span>
-                    <button type="button" onclick="removerIngredienteDaLista(${index})" 
-                            style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.95rem;">
-                        <i class="fas fa-trash-can"></i>
-                    </button>
+                    <input type="number" value="${ing.quantidade}" step="0.1" min="0.01" onchange="atualizarQuantidadeIngrediente(${index}, this.value)" style="width:65px; padding:6px; border: 1px solid #cbd5e1; border-radius: 8px; text-align: center;">
+                    <span style="color: #64748b; font-size: 0.85rem; width: 30px;">${ing.unidade}</span>
+                    <button type="button" onclick="removerIngredienteDaLista(${index})" style="background: none; border: none; color: #ef4444; cursor: pointer;"><i class="fas fa-trash-can"></i></button>
                 </div>
             </div>
         `).join('');
     }
 
-    // PERSISTIR CADASTRO OU EDICAO VIA POST/JSON
     async function salvarProduto() {
         const produto = {
             nome: document.getElementById('prodNome').value.trim(),
             categoria: document.getElementById('prodCat').value,
             precoVenda: parseFloat(document.getElementById('prodPreco').value),
             imagemBase64: imagemStringGlobal,
-            // Reestrutura o JSON de ingredientes para casar com a FichaTecnica do Java
-            fichaTecnica: ingredientesSelecionados.map(ing => ({
-                insumo: { id: ing.id },
+            usaControleEstoque: document.getElementById('toggleFicha').checked,
+            fichaTecnica: document.getElementById('toggleFicha').checked ? ingredientesSelecionados.map(ing => ({
+                insumoId: ing.id,
                 quantidade: ing.quantidade,
                 unidade: ing.unidade
-            }))
+            })) : []
         };
 
-        if (idProdutoEmEdicao !== null) {
-            produto.id = idProdutoEmEdicao; // Se for edição, acopla o ID no payload
-        }
-
-        if (!produto.nome) { alert("O nome do produto é obrigatório!"); return; }
-        if (isNaN(produto.precoVenda) || produto.precoVenda <= 0) { alert("Defina um preço de venda válido!"); return; }
+        if (idProdutoEmEdicao !== null) produto.id = idProdutoEmEdicao;
+        if (!produto.nome) { alert("Nome obrigatório!"); return; }
 
         try {
-            // Se idProdutoEmEdicao existe, enviamos para a rota de salvar que gerencia atualização
             const response = await fetch('/produtos/salvar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(produto)
             });
-
             if (response.ok) {
-                alert(idProdutoEmEdicao === null ? 'Produto cadastrado com sucesso!' : 'Ficha técnica e dados alterados!');
                 window.location.reload();
             } else {
-                const erro = await response.text();
-                alert('Falha na operação: ' + erro);
+                alert('Falha ao salvar: ' + await response.text());
             }
         } catch (error) {
-            console.error('Erro:', error);
-            alert('Erro na comunicação transacional.');
+            alert('Erro de conexão.');
         }
     }
 
-    // 🔥 NOVO: FUNÇÃO PARA REMOVER O PRODUTO INTEIRO DO BANCO DE DADOS
     async function deletarProduto() {
-        if (!idProdutoEmEdicao) return;
-        if (!confirm("Tem certeza que deseja apagar permanentemente este produto do cardápio?\nEsta operação não poderá ser desfeita!")) return;
-        
+        if (!idProdutoEmEdicao || !confirm("Deseja excluir permanentemente?")) return;
         try {
-            const response = await fetch('/produtos/' + idProdutoEmEdicao, {
-                method: 'DELETE'
-            });
-            
-            if (response.ok) {
-                alert("Produto removido com sucesso!");
-                window.location.reload();
-            } else {
-                const erro = await response.text();
-                alert("Erro ao remover produto: " + erro);
-            }
+            const response = await fetch('/produtos/' + idProdutoEmEdicao, { method: 'DELETE' });
+            if (response.ok) window.location.reload();
         } catch (error) {
-            console.error(error);
-            alert("Erro de conexão ao tentar excluir.");
+            alert("Erro ao excluir.");
         }
     }
 
-    // SALVAR E DELETAR CATEGORIAS
-    function salvarNovaCategoria() {
-        const nomeCat = document.getElementById('novaCatNome').value;
-        if(!nomeCat.trim()) { alert("Digite um nome válido para a categoria!"); return; }
-
-        fetch('/api/categorias', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome: nomeCat })
-        })
-        .then(res => {
-            if(res.ok) { alert("Categoria criada!"); window.location.reload(); } 
-            else { alert("Erro ao salvar categoria."); }
-        })
-        .catch(err => console.error(err));
-    }
-    
-    function deletarCategoria(id) {
-        if (!confirm("Excluir categoria movará os produtos dela para 'Geral'. Confirmar?")) return;
-        fetch('/api/categorias/' + id, { method: 'DELETE' })
-        .then(res => { if (res.ok) { window.location.reload(); } else { alert("Erro ao excluir."); } })
-        .catch(err => console.error(err));
+    function toggleAreaFicha(estaAtivo) {
+        const target = document.getElementById('areaFichaTecnica');
+        if(target) target.style.display = estaAtivo ? 'block' : 'none';
     }
 
-    // Fecha dropdown flutuante ao clicar na tela
     document.addEventListener('click', function(e) {
         const divSugestoes = document.getElementById('sugestoesIngredientes');
         const input = document.getElementById('buscaIngredienteInput');
-        if (divSugestoes && input && !divSugestoes.contains(e.target) && !input.contains(e.target)) {
+        if (divSugestoes && !divSugestoes.contains(e.target) && e.target !== input) {
             divSugestoes.style.display = 'none';
         }
     });
-    
- // 🔥 FUNÇÃO PARA MOSTRA/ESCONDER ÁREA DA FICHA TÉCNICA
-    function toggleAreaFicha(estaAtivo) {
-        const areaFicha = document.getElementById('areaFichaTecnica');
-        areaFicha.style.display = estaAtivo ? 'block' : 'none';
-    }
- 
-    (function () {
+
+    (() => {
         const saved = localStorage.getItem('sl-theme');
-        if (saved && saved !== 'light') {
-            document.documentElement.setAttribute('data-theme', saved);
-        }
+        if (saved && saved !== 'light') document.documentElement.setAttribute('data-theme', saved);
     })();
 </script>
 </body>

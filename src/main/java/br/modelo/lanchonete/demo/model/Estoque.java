@@ -3,7 +3,7 @@ package br.modelo.lanchonete.demo.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "estoque") // Nome da tabela no banco
+@Table(name = "estoque")
 public class Estoque {
 
     @Id
@@ -20,9 +20,8 @@ public class Estoque {
     private Integer qtdMinima;
 
     @Column(nullable = false)
-    private String unidade; // "un", "g", "ml", "kg"
+    private String unidade;
 
-    // Construtores
     public Estoque() {}
 
     public Estoque(String nome, Integer qtdAtual, Integer qtdMinima, String unidade) {
@@ -32,7 +31,6 @@ public class Estoque {
         this.unidade = unidade;
     }
 
-    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
