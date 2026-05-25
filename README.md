@@ -75,7 +75,6 @@ A nova versão está sendo construída com arquitetura de microsserviços, traze
 ### Versão 2.0 (Em desenvolvimento)
 - **Arquitetura:** Microsserviços com Spring Boot
 - **Comunicação:** REST APIs + Mensageria (RabbitMQ/Kafka)
-- **Descoberta de serviços:** Spring Cloud Netflix Eureka (previsto)
 - **API Gateway:** Spring Cloud Gateway (previsto)
 - **Ambiente:** Local (sem cloud/containers por enquanto)
 
