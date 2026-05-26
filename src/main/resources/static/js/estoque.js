@@ -2,10 +2,36 @@
 // ESTOQUE.JS - Controle de Insumos Real integrado via API Monolítica
 // ==========================================================================
 
-let insumos = []; // Carregado em tempo real do banco de dados
-let insumoEmEdicaoId = null; // null = Novo, número = Editando
-let filtroStatus = 'todos';
-let termoBusca   = '';
+let insumos = []; 
+let insumoEmEdicaoId = null; 
+let filtroStatusGlobal = 'todos';
+let termoBuscaGlobal   = '';
+
+// --------------------------------------------------------------------------
+// INICIALIZAÇÃO DE EVENTOS E ESCUTAS
+// --------------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    // Puxa os dados reais assim que a página abre
+    carregarInsumosDoBanco(); 
+
+    // Escuta a barra de pesquisa por texto
+    const searchInsumo = document.getElementById('searchInsumo');
+    if (searchInsumo) {
+        searchInsumo.addEventListener('input', e => {
+            termoBuscaGlobal = e.target.value;
+            renderTabela();
+        });
+    }
+
+    // Escuta a caixa de seleção de filtros por status
+    const filtroStatusSel = document.getElementById('filtroStatus');
+    if (filtroStatusSel) {
+        filtroStatusSel.addEventListener('change', e => {
+            filtroStatusGlobal = e.target.value;
+            renderTabela();
+        });
+    }
+});
 
 // --------------------------------------------------------------------------
 // CARREGAR DADOS DO SERVIDOR (BANCO DE DADOS)
@@ -65,12 +91,12 @@ function renderTabela() {
 
     let lista = [...insumos];
 
-    if (termoBusca) {
-        lista = lista.filter(i => i.nome.toLowerCase().includes(termoBusca.toLowerCase()));
+    if (termoBuscaGlobal) {
+        lista = lista.filter(i => i.nome.toLowerCase().includes(termoBuscaGlobal.toLowerCase()));
     }
 
-    if (filtroStatus !== 'todos') {
-        lista = lista.filter(i => calcularStatus(i) === filtroStatus);
+    if (filtroStatusGlobal !== 'todos') {
+        lista = lista.filter(i => calcularStatus(i) === filtroStatusGlobal);
     }
 
     if (!lista.length) {
@@ -165,7 +191,6 @@ function fecharModalInsumo() {
     document.getElementById('modalInsumo').classList.remove('open');
 }
 
-// 🔥 SALVAMENTO EM TEMPO REAL INTEGRADO AO CONTROLLER
 async function salvarInsumo() {
     const nome  = document.getElementById('formInsumoNome').value.trim();
     const qtd   = parseFloat(document.getElementById('formInsumoQtd').value);
@@ -184,7 +209,6 @@ async function salvarInsumo() {
         unidade: und
     };
 
-    // Caso seja uma edição, acopla o ID existente no JSON para o JPA atualizar
     if (insumoEmEdicaoId !== null) {
         payload.id = insumoEmEdicaoId;
     }
@@ -197,9 +221,9 @@ async function salvarInsumo() {
         });
 
         if (response.ok) {
-            toast(insumoEmEdicaoId !== null ? 'Insumo atualizado!' : 'Insumo cadastrado!');
+            toast(insumoEmEdicaoId !== null ? 'Insumo updated!' : 'Insumo cadastrado!');
             fecharModalInsumo();
-            carregarInsumosDoBanco(); // Atualiza a tabela na hora puxando do banco
+            carregarInsumosDoBanco(); 
         } else {
             const txtErro = await response.text();
             alert("Erro do servidor: " + txtErro);
@@ -242,26 +266,3 @@ async function confirmarExcluir() {
         console.error("Erro ao deletar:", error);
     }
 }
-
-// --------------------------------------------------------------------------
-// INICIALIZAÇÃO
-// --------------------------------------------------------------------------
-document.addEventListener('DOMContentLoaded', () => {
-    carregarInsumosDoBanco(); // Puxa os dados reais assim que a página abre
-
-    const searchInsumo = document.getElementById('searchInsumo');
-    if (searchInsumo) {
-        searchInsumo.addEventListener('input', e => {
-            termoBusca = e.target.value;
-            renderTabela();
-        });
-    }
-
-    const filtroStatusSel = document.getElementById('filtroStatus');
-    if (filtroStatusSel) {
-        filtroStatusSel.addEventListener('change', e => {
-            filtroStatus = e.target.value;
-            renderTabela();
-        });
-    }
-});

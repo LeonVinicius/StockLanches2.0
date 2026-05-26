@@ -1,5 +1,5 @@
 // ==========================================================================
-// PDV.JS - Lógica de Frente de Caixa (Carrinho e Pagamento)
+// PDV.JS - Lógica de Frente de Caixa (Carrinho, Filtros e Pagamento)
 // ==========================================================================
 
 let carrinho = [];
@@ -7,11 +7,12 @@ let formaPagamentoSelecionada = 'Pix';
 let valorTotal = 0;
 
 // ==========================================================================
-// FILTROS DE CATEGORIA E BUSCA
+// INICIALIZAÇÃO DE EVENTOS (FILTROS)
 // ==========================================================================
-
 document.addEventListener('DOMContentLoaded', function () {
     const inputBusca = document.getElementById('buscaProdutos');
+    
+    // Escuta a barra de pesquisa de texto
     if (inputBusca) {
         inputBusca.addEventListener('input', function (e) {
             const categoriaAtiva = document.querySelector('.pill-btn.active');
@@ -19,26 +20,29 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Escuta os cliques nas abas (Pills) de categorias
     const botoesCategoria = document.querySelectorAll('.pill-btn');
     botoesCategoria.forEach(botao => {
         botao.addEventListener('click', function () {
             botoesCategoria.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
+            
             const termoBusca = inputBusca ? inputBusca.value : '';
             filtrarProdutosDoPDV(termoBusca, this.textContent.trim());
         });
     });
 });
 
+// Mecanismo centralizado de filtro por Categoria + Busca textual
 function filtrarProdutosDoPDV(texto, categoria) {
     const cards = document.querySelectorAll('.product-card');
     if (!cards.length) return;
 
     cards.forEach(card => {
-        const nome   = (card.getAttribute('data-nome') || '').toLowerCase();
+        const nome = (card.getAttribute('data-nome') || '').toLowerCase();
         const catCard = (card.getAttribute('data-categoria') || '').toLowerCase();
 
-        const bateTexto     = !texto || nome.includes(texto.toLowerCase());
+        const bateTexto = !texto || nome.includes(texto.toLowerCase());
         const bateCategoria = !categoria || categoria === 'Tudo' || catCard === categoria.toLowerCase();
 
         card.style.display = (bateTexto && bateCategoria) ? 'flex' : 'none';
@@ -46,15 +50,24 @@ function filtrarProdutosDoPDV(texto, categoria) {
 }
 
 // ==========================================================================
-// CARRINHO
+// GESTÃO DO CARRINHO
 // ==========================================================================
+
+// Intercepta o clique do card HTML e extrai os atributos de dados
+function acionarCarrinhoPorCard(elemento) {
+    const id = elemento.getAttribute('data-id');
+    const nome = elemento.getAttribute('data-nome');
+    const preco = elemento.getAttribute('data-preco');
+    
+    adicionarAoCarrinho(id, nome, preco);
+}
 
 function adicionarAoCarrinho(id, nome, preco) {
     const itemExistente = carrinho.find(item => item.id === id);
     if (itemExistente) {
         itemExistente.quantidade += 1;
     } else {
-        carrinho.push({ id: id, nome: nome, preco: parseFloat(preco), quantidade: 1 });
+        carrinho.push({ id: id, nome: nome, preco: parseFloat(preco), bandwidth: 1, quantidade: 1 });
     }
     atualizarInterfaceCarrinho();
 }
@@ -128,9 +141,8 @@ function selecionarPagamento(elemento, metodo) {
 }
 
 // ==========================================================================
-// FINALIZAR COMPRA — chama POST /pdv/finalizar (JSON)
+// PROCESSAMENTO FINAL DA VENDA
 // ==========================================================================
-
 function finalizarCompra() {
     if (carrinho.length === 0) {
         alert('O carrinho está vazio.');
@@ -144,7 +156,7 @@ function finalizarCompra() {
         cliente: clienteNome,
         formaPagamento: formaPagamentoSelecionada,
         total: valorTotal,
-        itens: carrinho   // [{id, nome, preco, quantidade}, ...]
+        itens: carrinho  
     };
 
     const btnConfirmar = document.getElementById('btn-confirmar-pagamento');
@@ -166,7 +178,6 @@ function finalizarCompra() {
             document.getElementById('modalPagamento').style.display = 'none';
             if (clienteInput) clienteInput.value = '';
         } else {
-            // Tenta mostrar quais insumos estão faltando
             const data = await response.json().catch(() => null);
             if (data && data.faltando && data.faltando.length > 0) {
                 const lista = data.faltando
@@ -181,7 +192,7 @@ function finalizarCompra() {
     })
     .catch(error => {
         console.error('Erro:', error);
-        alert('Erro de comunicação com o servidor.');
+        alert('Erro de conexão com o servidor.');
     })
     .finally(() => {
         if (btnConfirmar) {

@@ -1,16 +1,16 @@
 package br.modelo.lanchonete.demo.mapper;
 
-import br.modelo.lanchonete.demo.dto.request.FichaTecnicaRequestDTO;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Component;
+
 import br.modelo.lanchonete.demo.dto.request.ProdutoRequestDTO;
 import br.modelo.lanchonete.demo.dto.response.FichaTecnicaResponseDTO;
 import br.modelo.lanchonete.demo.dto.response.InsumoResponseDTO;
 import br.modelo.lanchonete.demo.dto.response.ProdutoResponseDTO;
 import br.modelo.lanchonete.demo.model.FichaTecnica;
 import br.modelo.lanchonete.demo.model.Produto;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class ProdutoMapper {

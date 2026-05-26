@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script>
+        (function () {
+            const saved = localStorage.getItem('sl-theme');
+            if (saved) {
+                document.documentElement.setAttribute('data-theme', saved);
+            }
+        })();
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estoque (Insumos) - StockLanches</title>
@@ -8,6 +17,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/estilo-clean.css}">
     <link rel="stylesheet" th:href="@{/css/estoque.css}">
+    <style>
+        /* Estilos adicionais para inputs dentro do modal */
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea {
+            background: var(--bg-input, var(--bg-card));
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        .modal-box input:focus,
+        .modal-box select:focus {
+            border-color: var(--accent-blue);
+            outline: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -31,35 +55,29 @@
             <nav class="menu-nav">
                 <span class="menu-label">Operacional</span>
 
-                <a th:href="@{/pdv}" class="menu-item"
-                   th:classappend="${activePage == 'pdv'} ? 'active'">
+                <a th:href="@{/pdv}" class="menu-item" th:classappend="${activePage == 'pdv'} ? 'active'">
                     <i class="fas fa-desktop"></i> PDV
                 </a>
 
-                <a th:href="@{/consultar}" class="menu-item"
-                   th:classappend="${activePage == 'estoque'} ? 'active'">
+                <a th:href="@{/consultar}" class="menu-item" th:classappend="${activePage == 'estoque'} ? 'active'">
                     <i class="fas fa-boxes-stacked"></i> Estoque
                 </a>
 
-                <a th:href="@{/produtos}" class="menu-item"
-                   th:classappend="${activePage == 'produtos'} ? 'active'">
+                <a th:href="@{/produtos}" class="menu-item" th:classappend="${activePage == 'produtos'} ? 'active'">
                     <i class="fas fa-burger"></i> Produtos
                 </a>
 
                 <span class="menu-label">Gestão</span>
 
-                <a th:href="@{/estatisticas}" class="menu-item"
-                   th:classappend="${activePage == 'home'} ? 'active'">
+                <a th:href="@{/estatisticas}" class="menu-item" th:classappend="${activePage == 'home'} ? 'active'">
                     <i class="fas fa-chart-line"></i> Estatísticas
                 </a>
 
-                <a th:href="@{/historico}" class="menu-item"
-                   th:classappend="${activePage == 'historico'} ? 'active'">
+                <a th:href="@{/historico}" class="menu-item" th:classappend="${activePage == 'historico'} ? 'active'">
                     <i class="fas fa-history"></i> Histórico
                 </a>
 
-                <a th:href="@{/configuracoes}" class="menu-item"
-                   th:classappend="${activePage == 'configuracoes'} ? 'active'">
+                <a th:href="@{/configuracoes}" class="menu-item" th:classappend="${activePage == 'configuracoes'} ? 'active'">
                     <i class="fas fa-cog"></i> Ajustes
                 </a>
             </nav>
@@ -142,32 +160,32 @@
 </div>
 
 <div class="modal-overlay" id="modalInsumo">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3 id="formInsumoTitle">Adicionar Insumo</h3>
-            <button class="btn-close-modal" onclick="fecharModalInsumo()">×</button>
+    <div class="modal-box" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); box-shadow: var(--shadow-md); border-radius:16px; width:500px; max-width:90%;">
+        <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding:20px 24px 12px 24px; display:flex; justify-content:space-between; align-items:center;">
+            <h3 id="formInsumoTitle" style="color: var(--text-primary); font-weight: 700; margin:0;">Adicionar Insumo</h3>
+            <button class="btn-close-modal" onclick="fecharModalInsumo()" style="border:none; background:none; cursor:pointer; font-size:1.5rem; color: var(--text-muted);">&times;</button>
         </div>
 
-        <div class="modal-body">
-            <div class="form-group">
-                <label>Nome do Insumo</label>
-                <input type="text" id="formInsumoNome" placeholder="Ex: Pão de Hambúrguer">
+        <div class="modal-body" style="padding:24px;">
+            <div class="form-group" style="margin-bottom:16px;">
+                <label style="display:block; font-size:0.85rem; font-weight:600; color: var(--text-secondary); margin-bottom:6px;">Nome do Insumo</label>
+                <input type="text" id="formInsumoNome" placeholder="Ex: Pão de Hambúrguer" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; background: var(--bg-input, var(--bg-card)); color: var(--text-primary);">
             </div>
 
-            <div class="form-row-2">
+            <div class="form-row-2" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                 <div class="form-group">
-                    <label>Quantidade Atual</label>
-                    <input type="number" id="formInsumoQtd" placeholder="0" min="0" step="0.01">
+                    <label style="display:block; font-size:0.85rem; font-weight:600; color: var(--text-secondary); margin-bottom:6px;">Quantidade Atual</label>
+                    <input type="number" id="formInsumoQtd" placeholder="0" min="0" step="0.01" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; background: var(--bg-input, var(--bg-card)); color: var(--text-primary);">
                 </div>
                 <div class="form-group">
-                    <label>Qtd Mínima (Alerta)</label>
-                    <input type="number" id="formInsumoMin" placeholder="0" min="0" step="0.01">
+                    <label style="display:block; font-size:0.85rem; font-weight:600; color: var(--text-secondary); margin-bottom:6px;">Qtd Mínima (Alerta)</label>
+                    <input type="number" id="formInsumoMin" placeholder="0" min="0" step="0.01" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; background: var(--bg-input, var(--bg-card)); color: var(--text-primary);">
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Unidade de Medida</label>
-                <select id="formInsumoUnd">
+            <div class="form-group" style="margin-bottom:16px;">
+                <label style="display:block; font-size:0.85rem; font-weight:600; color: var(--text-secondary); margin-bottom:6px;">Unidade de Medida</label>
+                <select id="formInsumoUnd" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; background: var(--bg-input, var(--bg-card)); color: var(--text-primary);">
                     <option value="un">un (Unidade)</option>
                     <option value="g">g (Gramas)</option>
                     <option value="kg">kg (Quilogramas)</option>
@@ -179,9 +197,9 @@
             </div>
         </div>
 
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="fecharModalInsumo()">Cancelar</button>
-            <button class="btn-primary" onclick="salvarInsumo()">
+        <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding:16px 24px 20px 24px; display:flex; justify-content:flex-end; gap:12px;">
+            <button class="btn-cancel" onclick="fecharModalInsumo()" style="padding:10px 20px; border:none; background: var(--bg-main); border-radius:8px; cursor:pointer; font-weight: 600; color: var(--text-secondary);">Cancelar</button>
+            <button class="btn-primary" onclick="salvarInsumo()" style="padding:10px 24px; border:none; background: #2563eb; color: white; border-radius:8px; cursor:pointer; font-weight: 700;">
                 <i class="fas fa-save"></i> Salvar Insumo
             </button>
         </div>
@@ -189,26 +207,26 @@
 </div>
 
 <div class="modal-overlay" id="modalExcluir">
-    <div class="modal-box" style="width:420px">
-        <div class="modal-header">
-            <h3>Confirmar Exclusão</h3>
-            <button class="btn-close-modal" onclick="fecharModalExcluir()">×</button>
+    <div class="modal-box" style="width:420px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); box-shadow: var(--shadow-md); border-radius:16px;">
+        <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding:20px 24px 12px 24px; display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="color: var(--text-primary); font-weight: 700; margin:0;">Confirmar Exclusão</h3>
+            <button class="btn-close-modal" onclick="fecharModalExcluir()" style="border:none; background:none; cursor:pointer; font-size:1.5rem; color: var(--text-muted);">&times;</button>
         </div>
 
-        <div class="modal-body" style="text-align:center;padding:2rem 1.5rem">
+        <div class="modal-body" style="text-align:center; padding:2rem 1.5rem;">
             <div style="width:56px;height:56px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.4rem;color:var(--accent-red)">
                 <i class="fas fa-trash"></i>
             </div>
-            <p style="font-size:1rem;font-weight:700;margin-bottom:0.5rem">Excluir insumo?</p>
+            <p style="font-size:1rem;font-weight:700;margin-bottom:0.5rem; color: var(--text-primary);">Excluir insumo?</p>
             <p style="color:var(--text-secondary);font-size:0.875rem">
-                O insumo <strong id="excluirNome"></strong> será removido permanentemente
+                O insumo <strong id="excluirNome" style="color: var(--text-primary);"></strong> será removido permanentemente
                 junto com todos os seus vínculos de produtos.
             </p>
         </div>
 
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="fecharModalExcluir()">Cancelar</button>
-            <button class="btn-danger" onclick="confirmarExcluir()">
+        <div class="modal-footer" style="border-top: 1px solid var(--border-color); padding:16px 24px 20px 24px; display:flex; justify-content:flex-end; gap:12px;">
+            <button class="btn-cancel" onclick="fecharModalExcluir()" style="padding:10px 20px; border:none; background: var(--bg-main); border-radius:8px; cursor:pointer; font-weight: 600; color: var(--text-secondary);">Cancelar</button>
+            <button class="btn-danger" onclick="confirmarExcluir()" style="padding:10px 24px; border:none; background: #dc2626; color: white; border-radius:8px; cursor:pointer; font-weight: 700;">
                 <i class="fas fa-trash"></i> Sim, excluir
             </button>
         </div>
@@ -221,13 +239,5 @@
 </div>
 
 <script th:src="@{/js/estoque.js}"></script>
-<script>
-    (function () {
-        const saved = localStorage.getItem('sl-theme');
-        if (saved && saved !== 'light') {
-            document.documentElement.setAttribute('data-theme', saved);
-        }
-    })();
-</script>
 </body>
 </html>

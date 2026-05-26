@@ -1,18 +1,21 @@
 package br.modelo.lanchonete.demo.service;
 
-import br.modelo.lanchonete.demo.dto.request.ProdutoRequestDTO;
-import br.modelo.lanchonete.demo.dto.response.FichaTecnicaResponseDTO;
-import br.modelo.lanchonete.demo.dto.response.InsumoResponseDTO;
-import br.modelo.lanchonete.demo.dto.response.ProdutoResponseDTO;
-import br.modelo.lanchonete.demo.mapper.ProdutoMapper;
-import br.modelo.lanchonete.demo.model.Produto;
-import br.modelo.lanchonete.demo.model.FichaTecnica;
-import br.modelo.lanchonete.demo.repository.ProdutoRepository;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import br.modelo.lanchonete.demo.dto.request.ProdutoRequestDTO;
+import br.modelo.lanchonete.demo.dto.response.InsumoResponseDTO;
+import br.modelo.lanchonete.demo.dto.response.ProdutoResponseDTO;
+import br.modelo.lanchonete.demo.mapper.ProdutoMapper;
+import br.modelo.lanchonete.demo.model.FichaTecnica;
+import br.modelo.lanchonete.demo.model.Produto;
+import br.modelo.lanchonete.demo.repository.ProdutoRepository;
 
 @Service
 public class ProdutoService {

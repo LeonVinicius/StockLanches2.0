@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script>
+        (function () {
+            const saved = localStorage.getItem('sl-theme');
+            if (saved) {
+                document.documentElement.setAttribute('data-theme', saved);
+            }
+        })();
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cardápio - StockLanches</title>
     <link rel="stylesheet" th:href="@{/css/estilo-clean.css}">
     <link rel="stylesheet" th:href="@{/css/produtos.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}">
+    <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}">
     <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : ''}">
     <style>
         .modal-footer-group {
@@ -34,6 +43,24 @@
             background: #2563eb;
             color: white;
             border-color: #2563eb;
+        }
+        /* Estilos adaptáveis para o modal */
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea {
+            background: var(--bg-input, var(--bg-card));
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        .suggestions-dropdown {
+            background: var(--bg-card);
+            border-color: var(--border-color);
+        }
+        .suggestions-dropdown div {
+            color: var(--text-primary);
+        }
+        .suggestions-dropdown div:hover {
+            background: var(--bg-hover, #f1f5f9);
         }
     </style>
 </head>
@@ -66,7 +93,7 @@
                     <i class="fas fa-boxes-stacked"></i> Estoque
                 </a>
      
-                <a th:href="@{/produtos}" class="menu-item" th:classappend="${activePage == 'produtos'} ? 'active'">
+                <a th:href="@{/produtos}" class="menu-item" th:classappend="${activePage == 'produtos' || activePage == null} ? 'active'">
                     <i class="fas fa-burger"></i> Produtos
                 </a>
      
@@ -104,78 +131,79 @@
 
         <div class="card-grid">
             <div class="product-item-card" th:each="produto : ${produtos}">
-                <div class="product-img-container" style="width: 100%; height: 140px; overflow: hidden; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center;">
+                <div class="product-img-container" style="width: 100%; height: 140px; overflow: hidden; border-radius: 8px; background: var(--bg-main); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
                     <img th:if="${produto.imagemBase64 != null}" th:src="${produto.imagemBase64}" style="width: 100%; height: 100%; object-fit: cover;">
-                    <i th:if="${produto.imagemBase64 == null}" class="fas fa-burger" style="font-size: 2.5rem; color: #94a3b8;"></i>
+                    <i th:if="${produto.imagemBase64 == null}" class="fas fa-burger" style="font-size: 2.5rem; color: var(--text-muted);"></i>
                 </div>
 
-                <h3 th:text="${produto.nome}" style="margin-top: 12px;">Nome do Produto</h3>
-                <p>Preço: <strong th:text="'R$ ' + ${#numbers.formatDecimal(produto.precoVenda != null ? produto.precoVenda : 0.0, 1, 2)}">R$ 0,00</strong></p>
+                <h3 th:text="${produto.nome}" style="margin-top: 12px; color: var(--text-primary);">Nome do Produto</h3>
+                <p style="color: var(--text-secondary);">Preço: <strong th:text="'R$ ' + ${#numbers.formatDecimal(produto.precoVenda != null ? produto.precoVenda : 0.0, 1, 2)}" style="color: var(--accent-blue);">R$ 0,00</strong></p>
                 
-                <div class="ficha-lista" style="background: #f8fafc; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.85rem;">
-                    <strong style="color: #475569; display: block; margin-bottom: 5px;">Ficha Técnica (Abate Estoque):</strong>
-                    <div th:each="item : ${produto.fichaTecnica}" style="display: flex; justify-content: space-between; color: #64748b; margin-bottom: 3px;">
-                        <span th:text="${item.insumoNome}">Ingrediente</span>
+                <div class="ficha-lista" style="background: var(--bg-main); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.85rem;">
+                    <strong style="color: var(--text-secondary); display: block; margin-bottom: 5px;">Ficha Técnica (Abate Estoque):</strong>
+                    <div th:each="item : ${produto.fichaTecnica}" style="display: flex; justify-content: space-between; color: var(--text-secondary); margin-bottom: 3px;">
+                        <span th:text="${item.insumo != null ? item.insumo.nome : 'Ingrediente'}">Ingrediente</span>
                         <span th:text="'- ' + ${item.quantidade} + ' ' + ${item.unidade}">1 un</span>
                     </div>
-                    <div th:if="${#lists.isEmpty(produto.fichaTecnica)}" style="color: #94a3b8; font-style: italic;">
+                    <div th:if="${#lists.isEmpty(produto.fichaTecnica)}" style="color: var(--text-muted); font-style: italic;">
                         Nenhum ingrediente vinculado.
                     </div>
                 </div>
                 
-                <button type="button" class="edit-btn" style="width:100%" th:onclick="'abrirModalEditarProduto(' + ${produto.id} + ')'">Editar Ficha</button>
+                <button type="button" class="edit-btn" style="width:100%; margin-top: auto; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);" th:onclick="abrirModalEditarProduto([[${produto.id}]])">Editar Ficha</button>
             </div>
         </div>
     </main>
 </div>
 
-<div id="modalProduto" class="modal-overlay" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
-    <div class="modal-box" style="background:#fff; padding:25px; border-radius:16px; width:550px; max-height:90vh; overflow-y:auto;">
+<!-- MODAL PRODUTO CORRIGIDO -->
+<div id="modalProduto" class="modal-overlay" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index:1000;">
+    <div class="modal-box" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding:25px; border-radius:16px; width:550px; max-height:90vh; overflow-y:auto; box-shadow: var(--shadow-md);">
         
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 id="modalProdutoTitulo" style="margin:0; font-weight: 700;">Novo Produto</h3>
-            <button type="button" onclick="fecharModalProduto()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color: #94a3b8;">&times;</button>
+            <h3 id="modalProdutoTitulo" style="margin:0; font-weight: 700; color: var(--text-primary);">Novo Produto</h3>
+            <button type="button" onclick="fecharModalProduto()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color: var(--text-muted);">&times;</button>
         </div>
 
-        <label style="font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 5px; display: block;"><i class="far fa-image"></i> Imagem do Produto</label>
+        <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; display: block;"><i class="far fa-image"></i> Imagem do Produto</label>
         <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
-            <div style="flex: 1; border: 2px dashed #cbd5e1; padding: 25px 20px; text-align: center; border-radius: 12px; cursor: pointer; background: #f8fafc;" onclick="document.getElementById('fileInput').click()">
+            <div style="flex: 1; border: 2px dashed var(--border-color); padding: 25px 20px; text-align: center; border-radius: 12px; cursor: pointer; background: var(--bg-main);" onclick="document.getElementById('fileInput').click()">
                 <i class="fas fa-cloud-upload-alt" style="font-size: 1.8rem; color: #3b82f6;"></i>
-                <p style="font-size: 0.8rem; color: #64748b; margin-top: 8px; font-weight: 500;">Clique para fazer upload</p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; font-weight: 500;">Clique para fazer upload</p>
                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="previewImagem(this)">
             </div>
-            <div id="previewContainer" style="width: 105px; height: 105px; border: 1px solid #e2e8f0; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; overflow: hidden; flex-shrink: 0;">
-                <i class="far fa-image" id="previewIcon" style="font-size: 1.8rem; color: #94a3b8;"></i>
+            <div id="previewContainer" style="width: 105px; height: 105px; border: 1px solid var(--border-color); border-radius: 12px; display: flex; align-items: center; justify-content: center; background: var(--bg-main); overflow: hidden; flex-shrink: 0;">
+                <i class="far fa-image" id="previewIcon" style="font-size: 1.8rem; color: var(--text-muted);"></i>
                 <img id="previewImg" style="width: 100%; height: 100%; object-fit: cover; display: none;">
             </div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
             <div class="form-group">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Nome do Produto *</label>
-                <input type="text" id="prodNome" placeholder="Ex: X-Burger" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; margin-top: 4px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Nome do Produto *</label>
+                <input type="text" id="prodNome" placeholder="Ex: X-Burger" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; margin-top: 4px; background: var(--bg-input, var(--bg-card)); color: var(--text-primary);">
             </div>
             <div class="form-group">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Categoria *</label>
-                <select id="prodCat" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; margin-top: 4px; background: white;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Categoria *</label>
+                <select id="prodCat" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; margin-top: 4px; background: var(--bg-input, var(--bg-card)); color: var(--text-primary);">
                     <option th:each="cat : ${categorias}" th:value="${cat.nome}" th:text="${cat.nome}"></option>
                 </select>
             </div>
         </div>
 
         <div class="form-group" style="margin-top:15px;">
-            <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Preço de Venda (R$) *</label>
-            <input type="number" id="prodPreco" value="0" step="0.01" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; margin-top: 4px;">
+            <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Preço de Venda (R$) *</label>
+            <input type="number" id="prodPreco" value="0" step="0.01" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px; margin-top: 4px; background: var(--bg-input, var(--bg-card)); color: var(--text-primary);">
         </div>
 
         <div class="form-group" style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
             <input type="checkbox" id="toggleFicha" onchange="toggleAreaFicha(this.checked)" style="width: 20px; height: 20px; cursor: pointer;">
-            <label for="toggleFicha" style="font-weight: 600; color: #1e293b; cursor: pointer;"><i class="fas fa-link"></i> Ativar controle por Ficha Técnica</label>
+            <label for="toggleFicha" style="font-weight: 600; color: var(--text-primary); cursor: pointer;"><i class="fas fa-link"></i> Ativar controle por Ficha Técnica</label>
         </div>
 
-        <div id="areaFichaTecnica" style="display: none; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-            <h5 style="margin: 0 0 4px 0; font-size: 0.95rem; font-weight: 700; color: #1e293b;">Ficha Técnica - Ingredientes</h5>
-            <p style="font-size: 0.78rem; color: #64748b; margin: 0 0 12px 0;">Vincule insumos do estoque</p>
+        <div id="areaFichaTecnica" style="display: none; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <h5 style="margin: 0 0 4px 0; font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">Ficha Técnica - Ingredientes</h5>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0 0 12px 0;">Vincule insumos do estoque</p>
             
             <div style="display: flex; gap: 5px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px;">
                 <button type="button" class="pill-btn active" id="btn-filter-todos" onclick="filtrarTipoEstoque('todos')">Todos</button>
@@ -186,9 +214,9 @@
 
             <div style="display: flex; gap: 8px; margin-bottom: 15px; position: relative;">
                 <div style="position: relative; flex: 1;">
-                    <i class="fas fa-search" style="position: absolute; left: 12px; top: 12px; color: #94a3b8; font-size: 0.9rem;"></i>
-                    <input type="text" id="buscaIngredienteInput" placeholder="Buscar ingrediente..." style="width:100%; padding: 10px 10px 10px 35px; border:1px solid #cbd5e1; border-radius:10px; font-size: 0.9rem;" oninput="buscarIngredientesDoEstoque(this.value)">
-                    <div id="sugestoesIngredientes" style="display:none; position:absolute; top:100%; left:0; width:100%; background:white; border:1px solid #cbd5e1; border-radius:8px; z-index:2000; max-height:180px; overflow-y:auto; box-shadow:0 4px 6px rgba(0,0,0,0.05);"></div>
+                    <i class="fas fa-search" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted); font-size: 0.9rem;"></i>
+                    <input type="text" id="buscaIngredienteInput" placeholder="Buscar ingrediente..." style="width:100%; padding: 10px 10px 10px 35px; border:1px solid var(--border-color); border-radius:10px; font-size: 0.9rem; background: var(--bg-input, var(--bg-card)); color: var(--text-primary);" oninput="buscarIngredientesDoEstoque(this.value)">
+                    <div id="sugestoesIngredientes" style="display:none; position:absolute; top:100%; left:0; width:100%; background: var(--bg-card); border:1px solid var(--border-color); border-radius:8px; z-index:2000; max-height:180px; overflow-y:auto; box-shadow:0 4px 6px rgba(0,0,0,0.05);"></div>
                 </div>
                 <button type="button" onclick="confirmarAdicaoInsumoBotao()" style="padding: 10px 15px; background: #2563eb; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px;"><i class="fas fa-plus"></i> Vincular</button>
             </div>
@@ -198,30 +226,31 @@
 
         <div class="modal-footer-group">
             <button type="button" id="btnExcluirProduto" onclick="deletarProduto()" style="display:none; padding:10px 20px; border:none; background:#fee2e2; color:#ef4444; border-radius:8px; cursor:pointer; font-weight: 700; margin-right: auto;"><i class="fas fa-trash"></i> Excluir</button>
-            <button type="button" onclick="fecharModalProduto()" style="padding:10px 20px; border:none; background:#f1f5f9; border-radius:8px; cursor:pointer; font-weight: 600; color: #475569;">Cancelar</button>
+            <button type="button" onclick="fecharModalProduto()" style="padding:10px 20px; border:none; background: var(--bg-main); border-radius:8px; cursor:pointer; font-weight: 600; color: var(--text-secondary);">Cancelar</button>
             <button type="button" onclick="salvarProduto()" class="btn-submit" style="padding:10px 30px; border:none; background:#2563eb; color:white; border-radius:8px; cursor:pointer; font-weight: 700;">Cadastrar</button>
         </div>
     </div>
 </div>
 
-<div id="modalCategoria" class="modal-overlay" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1100;">
-    <div class="modal-box" style="background:#fff; padding:25px; border-radius:16px; width:380px;">
-        <h3>Gerenciar Categorias</h3>
+<!-- MODAL CATEGORIA CORRIGIDO -->
+<div id="modalCategoria" class="modal-overlay" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index:1100;">
+    <div class="modal-box" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding:25px; border-radius:16px; width:380px; box-shadow: var(--shadow-md);">
+        <h3 style="color: var(--text-primary); font-weight: 700;">Gerenciar Categorias</h3>
         <div class="form-group" style="margin: 15px 0 5px 0;">
             <div style="display:flex; gap:5px; margin-top:5px;">
-                <input type="text" id="cadastroCategoriaNomeUnico" placeholder="Ex: Bebidas" style="flex:1; padding:10px; border:1px solid #cbd5e1; border-radius:8px;">
+                <input type="text" id="cadastroCategoriaNomeUnico" placeholder="Ex: Bebidas" style="flex:1; padding:10px; border:1px solid var(--border-color); border-radius:8px; background: var(--bg-input, var(--bg-card)); color: var(--text-primary);">
                 <button type="button" onclick="salvarNovaCategoriaExplicita()" style="padding:10px 15px; border:none; background:#2563eb; color:white; border-radius:8px; cursor:pointer;"><i class="fas fa-plus"></i></button>
             </div>
         </div>
         <div style="margin: 20px 0 15px 0;">
-            <div style="max-height: 150px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px;">
-                <div th:each="cat : ${categorias}" style="display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid #f1f5f9;">
-                    <span th:text="${cat.nome}" style="font-size:0.9rem;">Nome</span>
+            <div style="max-height: 150px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 5px; background: var(--bg-main);">
+                <div th:each="cat : ${categorias}" style="display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid var(--border-color);">
+                    <span th:text="${cat.nome}" style="font-size:0.9rem; color: var(--text-primary);">Nome</span>
                     <button type="button" th:onclick="'deletarCategoria(' + ${cat.id} + ')'" style="background:none; border:none; color:#ef4444; cursor:pointer;"><i class="fas fa-trash-can"></i></button>
                 </div>
             </div>
         </div>
-        <button type="button" onclick="fecharModalCategoria()" style="padding:8px 15px; border:none; background:#f1f5f9; border-radius:8px; cursor:pointer; width:100%;">Fechar</button>
+        <button type="button" onclick="fecharModalCategoria()" style="padding:8px 15px; border:none; background: var(--bg-main); border-radius:8px; cursor:pointer; width:100%; color: var(--text-secondary);">Fechar</button>
     </div>
 </div>
 
@@ -232,9 +261,6 @@
     let insumoSelecionadoDropdown = null;
     let filtroUnidadeAtivo = 'todos';
 
-    // --------------------------------------------------------------------------
-    // AMARRAÇÃO SEGURA DE EVENTOS (Roda assim que a página termina de carregar)
-    // --------------------------------------------------------------------------
     document.addEventListener('DOMContentLoaded', () => {
         const btnCat = document.getElementById('btnSalvarCategoriaFisica');
         if (btnCat) {
@@ -245,29 +271,17 @@
         }
     });
 
-    // --------------------------------------------------------------------------
-    // GESTÃO DE CATEGORIAS (Conversa diretamente com o CategoriaRequestDTO)
-    // --------------------------------------------------------------------------
     async function salvarNovaCategoriaExplicita() {
-        console.log("[JS LOG] Função salvarNovaCategoriaExplicita acionada no clique!");
-        
         const inputElement = document.getElementById('cadastroCategoriaNomeUnico');
         const nomeCat = inputElement ? inputElement.value.trim() : '';
-        
-        if (!nomeCat) { 
-            alert("Por favor, digite um nome válido para a categoria!"); 
-            return; 
-        }
+        if (!nomeCat) { alert("Por favor, digite um nome válido!"); return; }
 
         const csrfMeta = document.querySelector('meta[name="_csrf"]');
         const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
         const headers = { 'Content-Type': 'application/json' };
-        
         if (csrfMeta && csrfHeaderMeta && csrfMeta.content && csrfHeaderMeta.content) {
             headers[csrfHeaderMeta.content] = csrfMeta.content;
         }
-
-        console.log("[JS LOG] Enviando payload via Fetch para /api/categorias...");
 
         try {
             const response = await fetch('/api/categorias', {
@@ -275,63 +289,41 @@
                 headers: headers,
                 body: JSON.stringify({ nome: nomeCat }) 
             });
-
             if (response.ok) {
-                alert("Categoria criada com sucesso!");
                 window.location.reload();
             } else {
-                const textErro = await response.text();
-                alert("Erro no servidor (Status " + response.status + "): " + textErro);
+                alert("Erro: " + await response.text());
             }
         } catch (error) {
-            console.error("[JS LOG] Falha na requisição Fetch:", error);
-            alert("Erro de conexão ao tentar salvar categoria.");
+            alert("Erro de conexão.");
         }
     }
 
     async function deletarCategoria(id) {
-        if (!confirm('Excluir categoria? Produtos vinculados vão para "Geral".')) return;
+        if (!confirm('Excluir categoria?')) return;
         try {
             const response = await fetch('/api/categorias/' + id, { method: 'DELETE' });
-            if (response.ok) {
-                window.location.reload();
-            } else {
-                alert('Erro: ' + await response.text());
-            }
-        } catch (e) {
-            alert('Erro de conexão.');
-        }
+            if (response.ok) window.location.reload();
+        } catch (e) { alert('Erro de conexão.'); }
     }
-
-    // --------------------------------------------------------------------------
-    // MODAIS E PRODUTOS
-    // --------------------------------------------------------------------------
-    function abrirProduto(id = null) { abrirModalProduto(id); } // Alias preventivo
 
     function abrirModalProduto(id = null) {
         idProdutoEmEdicao = id;
         const titulo = document.getElementById('modalProdutoTitulo');
         const btnExcluir = document.getElementById('btnExcluirProduto');
-        const btnSalvar = document.querySelector('#modalProduto .btn-submit');
         
         if (id === null) {
             titulo.textContent = "Novo Produto";
             btnExcluir.style.display = "none";
-            if(btnSalvar) btnSalvar.textContent = "Cadastrar";
             limparFormularioProduto();
         } else {
             titulo.textContent = "Editar Ficha do Produto";
             btnExcluir.style.display = "block";
-            if(btnSalvar) btnSalvar.textContent = "Salvar Alterações";
         }
         document.getElementById('modalProduto').style.display = 'flex';
     }
 
-    function fecharModalProduto() { 
-        document.getElementById('modalProduto').style.display = 'none'; 
-        idProdutoEmEdicao = null;
-    }
-
+    function fecharModalProduto() { document.getElementById('modalProduto').style.display = 'none'; }
     function abrirModalCategoria() { document.getElementById('modalCategoria').style.display = 'flex'; }
     function fecharModalCategoria() { document.getElementById('modalCategoria').style.display = 'none'; }
 
@@ -340,7 +332,6 @@
         document.getElementById('prodPreco').value = '0';
         document.getElementById('toggleFicha').checked = false;
         toggleAreaFicha(false);
-        document.getElementById('previewImg').src = '';
         document.getElementById('previewImg').style.display = 'none';
         document.getElementById('previewIcon').style.display = 'block';
         imagemStringGlobal = null;
@@ -366,7 +357,6 @@
         abrirModalProduto(id);
         try {
             const response = await fetch('/api/produtos/' + id);
-            if (!response.ok) throw new Error();
             const produto = await response.json();
             
             document.getElementById('prodNome').value = produto.nome;
@@ -390,48 +380,32 @@
                 quantidade: item.quantidade,
                 unidade: item.unidade
             }));
-            
             renderLista();
         } catch (error) {
             alert("Erro ao ler dados.");
-            fecharModalProduto();
         }
     }
 
     function filtrarTipoEstoque(unidade) {
         filtroUnidadeAtivo = unidade;
-        ['todos', 'un', 'g', 'ml'].forEach(u => {
-            const el = document.getElementById('btn-filter-' + u);
-            if(el) el.classList.remove('active');
-        });
-        const activeEl = document.getElementById('btn-filter-' + unidade);
-        if(activeEl) activeEl.classList.add('active');
-        const texto = document.getElementById('buscaIngredienteInput').value;
-        if(texto.trim()) buscarIngredientesDoEstoque(texto);
+        ['todos', 'un', 'g', 'ml'].forEach(u => document.getElementById('btn-filter-' + u).classList.remove('active'));
+        document.getElementById('btn-filter-' + unidade).classList.add('active');
     }
 
     async function buscarIngredientesDoEstoque(termo) {
         const sugestoesDiv = document.getElementById('sugestoesIngredientes');
-        if (!termo || termo.trim().length < 2) {
-            sugestoesDiv.style.display = 'none';
-            return;
-        }
+        if (!termo || termo.trim().length < 2) { sugestoesDiv.style.display = 'none'; return; }
         try {
             const response = await fetch(`/api/insumos/busca?termo=${encodeURIComponent(termo)}`);
-            if (!response.ok) return;
             const insumos = await response.json();
-            
             sugestoesDiv.innerHTML = insumos.map(insumo => `
-                <div class="dropdown-item-insumo" onclick="selecionarItemDropdown(${insumo.id}, '${insumo.nome.replace(/'/g, "\\'")}', '${insumo.unidade}')" 
-                     style="padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #e2e8f0; background: #fff; display: flex; justify-content: space-between; align-items: center;">
-                    <span><i class="fas fa-boxes" style="color:#94a3b8;margin-right:8px;"></i>${insumo.nome}</span>
-                    <span style="background:#f1f5f9; padding:2px 8px; border-radius:20px; font-size:0.75rem;">${insumo.unidade}</span>
+                <div class="dropdown-item-insumo" onclick="selecionarItemDropdown(${insumo.id}, '${insumo.nome.replace(/'/g, "\\'")}', '${insumo.unidade}')" style="padding:12px 15px; cursor:pointer; background: var(--bg-card); display:flex; justify-content:space-between; color: var(--text-primary);">
+                    <span>${insumo.nome}</span>
+                    <span>${insumo.unidade}</span>
                 </div>
             `).join('');
             sugestoesDiv.style.display = 'block';
-        } catch (error) {
-            console.error(error);
-        }
+        } catch (e) {}
     }
 
     function selecionarItemDropdown(id, nome, unidade) {
@@ -442,46 +416,29 @@
 
     function confirmarAdicaoInsumoBotao() {
         if (!insumoSelecionadoDropdown) return;
-        if (ingredientesSelecionados.some(ing => ing.id === insumoSelecionadoDropdown.id)) {
-            alert('Ingrediente já adicionado!');
-            return;
-        }
-        ingredientesSelecionados.push({
-            id: insumoSelecionadoDropdown.id,
-            nome: insumoSelecionadoDropdown.nome,
-            quantidade: 1,
-            unidade: insumoSelecionadoDropdown.unidade
-        });
+        if (ingredientesSelecionados.some(ing => ing.id === insumoSelecionadoDropdown.id)) { alert('Ingrediente já adicionado!'); return; }
+        ingredientesSelecionados.push({ ...insumoSelecionadoDropdown, quantidade: 1 });
         renderLista();
-        insumoSelecionadoDropdown = null;
         document.getElementById('buscaIngredienteInput').value = '';
     }
 
-    function removerIngredienteDaLista(index) {
-        ingredientesSelecionados.splice(index, 1);
-        renderLista();
-    }
-
-    function atualizarQuantidadeIngrediente(index, novaQuantidade) {
-        if (ingredientesSelecionados[index]) {
-            ingredientesSelecionados[index].quantidade = parseFloat(novaQuantidade) || 0;
-        }
-    }
+    function removerIngredienteDaLista(index) { ingredientesSelecionados.splice(index, 1); renderLista(); }
+    function atualizarQuantidadeIngrediente(index, qte) { if(ingredientesSelecionados[index]) ingredientesSelecionados[index].quantidade = parseFloat(qte) || 0; }
 
     function renderLista() {
         const container = document.getElementById('listaIngredientes');
         if (!container) return;
         if (ingredientesSelecionados.length === 0) {
-            container.innerHTML = `<div style="text-align: center; padding: 20px; color: #94a3b8; border: 1px dashed #cbd5e1; border-radius: 12px;">Ficha limpa. Vincule ingredientes.</div>`;
+            container.innerHTML = `<div style="text-align:center; padding:20px; color: var(--text-muted); border:1px dashed var(--border-color); border-radius:12px;">Ficha limpa.</div>`;
             return;
         }
         container.innerHTML = ingredientesSelecionados.map((ing, index) => `
-            <div style="display:flex; justify-content: space-between; align-items:center; padding: 10px 14px; background:#fff; border: 1px solid #e2e8f0; border-radius: 12px;">
-                <span style="font-weight: 500; font-size: 0.9rem;">${ing.nome}</span>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <input type="number" value="${ing.quantidade}" step="0.1" min="0.01" onchange="atualizarQuantidadeIngrediente(${index}, this.value)" style="width:65px; padding:6px; border: 1px solid #cbd5e1; border-radius: 8px; text-align: center;">
-                    <span style="color: #64748b; font-size: 0.85rem; width: 30px;">${ing.unidade}</span>
-                    <button type="button" onclick="removerIngredienteDaLista(${index})" style="background: none; border: none; color: #ef4444; cursor: pointer;"><i class="fas fa-trash-can"></i></button>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border:1px solid var(--border-color); border-radius:12px; background: var(--bg-main);">
+                <span style="color: var(--text-primary);">${ing.nome}</span>
+                <div>
+                    <input type="number" value="${ing.quantidade}" step="0.1" onchange="atualizarQuantidadeIngrediente(${index}, this.value)" style="width:65px; text-align:center; background: var(--bg-input, var(--bg-card)); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 4px;">
+                    <span style="color: var(--text-secondary);">${ing.unidade}</span>
+                    <button type="button" onclick="removerIngredienteDaLista(${index})" style="background:none; border:none; color:#ef4444; cursor:pointer;"><i class="fas fa-trash-can"></i></button>
                 </div>
             </div>
         `).join('');
@@ -494,59 +451,24 @@
             precoVenda: parseFloat(document.getElementById('prodPreco').value),
             imagemBase64: imagemStringGlobal,
             usaControleEstoque: document.getElementById('toggleFicha').checked,
-            fichaTecnica: document.getElementById('toggleFicha').checked ? ingredientesSelecionados.map(ing => ({
-                insumoId: ing.id,
-                quantidade: ing.quantidade,
-                unidade: ing.unidade
-            })) : []
+            fichaTecnica: document.getElementById('toggleFicha').checked ? ingredientesSelecionados.map(ing => ({ insumoId: ing.id, quantidade: ing.quantidade, unidade: ing.unidade })) : []
         };
-
         if (idProdutoEmEdicao !== null) produto.id = idProdutoEmEdicao;
-        if (!produto.nome) { alert("Nome obrigatório!"); return; }
-
         try {
-            const response = await fetch('/produtos/salvar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(produto)
-            });
-            if (response.ok) {
-                window.location.reload();
-            } else {
-                alert('Falha ao salvar: ' + await response.text());
-            }
-        } catch (error) {
-            alert('Erro de conexão.');
-        }
+            const response = await fetch('/produtos/salvar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(produto) });
+            if (response.ok) window.location.reload();
+        } catch (e) {}
     }
 
     async function deletarProduto() {
-        if (!idProdutoEmEdicao || !confirm("Deseja excluir permanentemente?")) return;
+        if (!idProdutoEmEdicao || !confirm("Deseja excluir?")) return;
         try {
             const response = await fetch('/produtos/' + idProdutoEmEdicao, { method: 'DELETE' });
             if (response.ok) window.location.reload();
-        } catch (error) {
-            alert("Erro ao excluir.");
-        }
+        } catch (e) {}
     }
 
-    function toggleAreaFicha(estaAtivo) {
-        const target = document.getElementById('areaFichaTecnica');
-        if(target) target.style.display = estaAtivo ? 'block' : 'none';
-    }
-
-    document.addEventListener('click', function(e) {
-        const divSugestoes = document.getElementById('sugestoesIngredientes');
-        const input = document.getElementById('buscaIngredienteInput');
-        if (divSugestoes && !divSugestoes.contains(e.target) && e.target !== input) {
-            divSugestoes.style.display = 'none';
-        }
-    });
-
-    (() => {
-        const saved = localStorage.getItem('sl-theme');
-        if (saved && saved !== 'light') document.documentElement.setAttribute('data-theme', saved);
-    })();
+    function toggleAreaFicha(estaAtivo) { document.getElementById('areaFichaTecnica').style.display = estaAtivo ? 'block' : 'none'; }
 </script>
 </body>
 </html>
