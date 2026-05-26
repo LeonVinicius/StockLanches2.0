@@ -26,24 +26,6 @@
             width: 100%;
             margin-top: 20px;
         }
-        .dropdown-item-insumo:hover {
-            background-color: #f1f5f9 !important;
-        }
-        .pill-btn {
-            border: 1px solid #cbd5e1;
-            background: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: #64748b;
-        }
-        .pill-btn.active {
-            background: #2563eb;
-            color: white;
-            border-color: #2563eb;
-        }
         /* Estilos adaptáveis para o modal */
         .modal-box input,
         .modal-box select,
@@ -51,16 +33,6 @@
             background: var(--bg-input, var(--bg-card));
             color: var(--text-primary);
             border-color: var(--border-color);
-        }
-        .suggestions-dropdown {
-            background: var(--bg-card);
-            border-color: var(--border-color);
-        }
-        .suggestions-dropdown div {
-            color: var(--text-primary);
-        }
-        .suggestions-dropdown div:hover {
-            background: var(--bg-hover, #f1f5f9);
         }
     </style>
 </head>
@@ -156,7 +128,6 @@
     </main>
 </div>
 
-<!-- MODAL PRODUTO CORRIGIDO -->
 <div id="modalProduto" class="modal-overlay" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index:1000;">
     <div class="modal-box" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding:25px; border-radius:16px; width:550px; max-height:90vh; overflow-y:auto; box-shadow: var(--shadow-md);">
         
@@ -203,22 +174,22 @@
 
         <div id="areaFichaTecnica" style="display: none; margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 20px;">
             <h5 style="margin: 0 0 4px 0; font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">Ficha Técnica - Ingredientes</h5>
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0 0 12px 0;">Vincule insumos do estoque</p>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0 0 12px 0;">Selecione os insumos do estoque</p>
             
-            <div style="display: flex; gap: 5px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px;">
-                <button type="button" class="pill-btn active" id="btn-filter-todos" onclick="filtrarTipoEstoque('todos')">Todos</button>
-                <button type="button" class="pill-btn" id="btn-filter-un" onclick="filtrarTipoEstoque('un')">Unidades</button>
-                <button type="button" class="pill-btn" id="btn-filter-g" onclick="filtrarTipoEstoque('g')">Pesáveis (g)</button>
-                <button type="button" class="pill-btn" id="btn-filter-ml" onclick="filtrarTipoEstoque('ml')">Líquidos (ml)</button>
-            </div>
-
-            <div style="display: flex; gap: 8px; margin-bottom: 15px; position: relative;">
-                <div style="position: relative; flex: 1;">
-                    <i class="fas fa-search" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted); font-size: 0.9rem;"></i>
-                    <input type="text" id="buscaIngredienteInput" placeholder="Buscar ingrediente..." style="width:100%; padding: 10px 10px 10px 35px; border:1px solid var(--border-color); border-radius:10px; font-size: 0.9rem; background: var(--bg-input, var(--bg-card)); color: var(--text-primary);" oninput="buscarIngredientesDoEstoque(this.value)">
-                    <div id="sugestoesIngredientes" style="display:none; position:absolute; top:100%; left:0; width:100%; background: var(--bg-card); border:1px solid var(--border-color); border-radius:8px; z-index:2000; max-height:180px; overflow-y:auto; box-shadow:0 4px 6px rgba(0,0,0,0.05);"></div>
-                </div>
-                <button type="button" onclick="confirmarAdicaoInsumoBotao()" style="padding: 10px 15px; background: #2563eb; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px;"><i class="fas fa-plus"></i> Vincular</button>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <select id="comboInsumosEstoque" style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 0.9rem; background: var(--bg-input, var(--bg-card)); color: var(--text-primary); cursor: pointer;">
+                    <option value="">-- Escolha um ingrediente para vincular --</option>
+                    <option th:each="insumo : ${insumosEstoque}" 
+                            th:value="${insumo.id}" 
+                            th:data-nome="${insumo.nome}" 
+                            th:data-unidade="${insumo.unidade}" 
+                            th:text="${insumo.nome} + ' (' + ${insumo.unidade} + ')'">
+                    </option>
+                </select>
+                
+                <button type="button" onclick="confirmarAdicaoInsumoCombo()" style="padding: 10px 15px; background: #2563eb; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px; white-space: nowrap;">
+                    <i class="fas fa-plus"></i> Vincular
+                </button>
             </div>
             
             <div id="listaIngredientes" style="margin-bottom:15px; display: flex; flex-direction: column; gap: 8px;"></div>
@@ -232,7 +203,6 @@
     </div>
 </div>
 
-<!-- MODAL CATEGORIA CORRIGIDO -->
 <div id="modalCategoria" class="modal-overlay" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index:1100;">
     <div class="modal-box" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding:25px; border-radius:16px; width:380px; box-shadow: var(--shadow-md);">
         <h3 style="color: var(--text-primary); font-weight: 700;">Gerenciar Categorias</h3>
@@ -258,8 +228,6 @@
     let imagemStringGlobal = null;
     let ingredientesSelecionados = [];
     let idProdutoEmEdicao = null;
-    let insumoSelecionadoDropdown = null;
-    let filtroUnidadeAtivo = 'todos';
 
     document.addEventListener('DOMContentLoaded', () => {
         const btnCat = document.getElementById('btnSalvarCategoriaFisica');
@@ -386,40 +354,35 @@
         }
     }
 
-    function filtrarTipoEstoque(unidade) {
-        filtroUnidadeAtivo = unidade;
-        ['todos', 'un', 'g', 'ml'].forEach(u => document.getElementById('btn-filter-' + u).classList.remove('active'));
-        document.getElementById('btn-filter-' + unidade).classList.add('active');
-    }
+    // ── 🟢 CORRIGIDO: Captura a seleção da Combobox e adiciona diretamente à Ficha Técnica ──
+    function confirmarAdicaoInsumoCombo() {
+        const combo = document.getElementById('comboInsumosEstoque');
+        const selectedOption = combo.options[combo.selectedIndex];
+        
+        if (!selectedOption || combo.value === "") {
+            alert('Por favor, selecione um ingrediente válido na lista!');
+            return;
+        }
 
-    async function buscarIngredientesDoEstoque(termo) {
-        const sugestoesDiv = document.getElementById('sugestoesIngredientes');
-        if (!termo || termo.trim().length < 2) { sugestoesDiv.style.display = 'none'; return; }
-        try {
-            const response = await fetch(`/api/insumos/busca?termo=${encodeURIComponent(termo)}`);
-            const insumos = await response.json();
-            sugestoesDiv.innerHTML = insumos.map(insumo => `
-                <div class="dropdown-item-insumo" onclick="selecionarItemDropdown(${insumo.id}, '${insumo.nome.replace(/'/g, "\\'")}', '${insumo.unidade}')" style="padding:12px 15px; cursor:pointer; background: var(--bg-card); display:flex; justify-content:space-between; color: var(--text-primary);">
-                    <span>${insumo.nome}</span>
-                    <span>${insumo.unidade}</span>
-                </div>
-            `).join('');
-            sugestoesDiv.style.display = 'block';
-        } catch (e) {}
-    }
+        const idInsumo = parseInt(combo.value);
+        const nomeInsumo = selectedOption.getAttribute('data-nome');
+        const unidadeInsumo = selectedOption.getAttribute('data-unidade');
 
-    function selecionarItemDropdown(id, nome, unidade) {
-        insumoSelecionadoDropdown = { id, nome, unidade };
-        document.getElementById('buscaIngredienteInput').value = nome;
-        document.getElementById('sugestoesIngredientes').style.display = 'none';
-    }
+        // Evita duplicidade de insumos no mesmo produto
+        if (ingredientesSelecionados.some(ing => ing.id === idInsumo)) {
+            alert('Este ingrediente já foi adicionado à composição deste produto!');
+            return;
+        }
 
-    function confirmarAdicaoInsumoBotao() {
-        if (!insumoSelecionadoDropdown) return;
-        if (ingredientesSelecionados.some(ing => ing.id === insumoSelecionadoDropdown.id)) { alert('Ingrediente já adicionado!'); return; }
-        ingredientesSelecionados.push({ ...insumoSelecionadoDropdown, quantidade: 1 });
+        ingredientesSelecionados.push({
+            id: idInsumo,
+            nome: nomeInsumo,
+            quantidade: 1,
+            unidade: unidadeInsumo
+        });
+
         renderLista();
-        document.getElementById('buscaIngredienteInput').value = '';
+        combo.value = ""; // Reseta o select
     }
 
     function removerIngredienteDaLista(index) { ingredientesSelecionados.splice(index, 1); renderLista(); }
@@ -451,7 +414,7 @@
             precoVenda: parseFloat(document.getElementById('prodPreco').value),
             imagemBase64: imagemStringGlobal,
             usaControleEstoque: document.getElementById('toggleFicha').checked,
-            fichaTecnica: document.getElementById('toggleFicha').checked ? ingredientesSelecionados.map(ing => ({ insumoId: ing.id, quantidade: ing.quantidade, unidade: ing.unidade })) : []
+            fichaTecnica: document.getElementById('toggleFicha').checked ? ingredientesSelecionados.map(ing => ({ insumoId: ing.id, quantitative: ing.quantidade, unidade: ing.unidade })) : []
         };
         if (idProdutoEmEdicao !== null) produto.id = idProdutoEmEdicao;
         try {

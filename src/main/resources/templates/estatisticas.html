@@ -17,84 +17,83 @@
     <link rel="stylesheet" th:href="@{/css/estilo-clean.css}">
     
     <style>
-      :root {
-        --surface: #ffffff;
-        --surface2: #f8f8f6;
-        --border-bi: rgba(0,0,0,0.08);
-        --text-bi3: #a0a09c;
-        --blue-bi: #185FA5;
-        --blue-light-bi: #E6F1FB;
-        --green-bi: #3B6D11;
-        --green-light-bi: #EAF3DE;
-        --amber-bi: #854F0B;
-        --amber-light-bi: #FAEEDA;
-        --red-bi: #A32D2D;
-        --red-light-bi: #FCEBEB;
-        --purple-bi: #3C3489;
-        --purple-light-bi: #EEEDFE;
-        --radius-lg: 12px;
-        --shadow-bi: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-      }
-
-      [data-theme="dark"] {
-        --surface: #1E293B;
-        --surface2: #263244;
-        --border-bi: #334155;
-        --text-bi3: #64748B;
-        --blue-light-bi: rgba(37,99,235,0.15);
-        --green-light-bi: rgba(34,197,94,0.15);
-        --amber-light-bi: rgba(245,158,11,0.15);
-        --red-light-bi: rgba(239,68,68,0.15);
-        --purple-light-bi: rgba(168,85,247,0.15);
-      }
-
+      /* ── ESTÉTICA DINÂMICA INTEGRADA EM CARDS ADAPTÁVEIS AO TEMA ── */
       .bi-container { font-family: 'DM Sans', sans-serif; margin-top: 5px; }
-      .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 12px; }
-      .kpi { background: var(--surface); border: 1px solid var(--border-bi); border-radius: var(--radius-lg); padding: 14px 16px; box-shadow: var(--shadow-bi); }
+      
+      .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 14px; }
+      
+      /* 🟢 CORRIGIDO: O background agora herda var(--bg-card) do seu tema para acompanhar o Dark Mode */
+      .kpi { 
+        background: var(--bg-card, #ffffff); 
+        border: 1px solid var(--border-color, rgba(0,0,0,0.08)); 
+        border-radius: 12px; 
+        padding: 14px 16px; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); 
+      }
       .kpi-top { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
       .kpi-icon { font-size: 14px; }
-      .kpi-label { font-size: 9px; font-weight: 600; color: var(--text-bi3); text-transform: uppercase; letter-spacing: .07em; }
+      .kpi-label { font-size: 9px; font-weight: 600; color: var(--text-secondary, #a0a09c); text-transform: uppercase; letter-spacing: .07em; }
       .kpi-val { font-size: 22px; font-weight: 600; line-height: 1.1; color: var(--text-primary); }
-      .kpi-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; margin-top: 5px; padding: 2px 8px; border-radius: 20px; }
-      .b-up   { background: var(--green-light-bi);  color: var(--green-bi); }
-      .b-neu  { background: var(--blue-light-bi);   color: var(--blue-bi); }
-      .b-down { background: var(--red-light-bi);    color: var(--red-bi); }
-      .b-pur  { background: var(--purple-light-bi); color: var(--purple-bi); }
       
-      .bi-card { background: var(--surface); border: 1px solid var(--border-bi); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-bi); }
-      .bi-card-title { font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: .07em; }
+      .kpi-badge { 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 3px; 
+        font-size: 10px; 
+        font-weight: 600; 
+        margin-top: 5px; 
+        padding: 2px 8px; 
+        border-radius: 20px; 
+      }
+      .b-neu { background: rgba(37,99,235,0.1); color: #185FA5; }
+      .b-pur { background: rgba(168,85,247,0.1); color: #3C3489; }
+      
+      /* 🟢 CORRIGIDO: Modificado o background e a borda para se adequarem em tempo real */
+      .bi-card { 
+        background: var(--bg-card, #ffffff); 
+        border: 1px solid var(--border-color, rgba(0,0,0,0.08)); 
+        border-radius: 12px; 
+        padding: 16px; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); 
+      }
+      .bi-card-title { font-size: 10px; font-weight: 600; color: var(--text-secondary, #6b6b67); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: .07em; }
       .bi-card-title i { font-size: 14px; }
       
       .bi-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
       .bi-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
       .legend-row { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
-      .ltext { font-size: 10px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+      .ltext { font-size: 10px; color: var(--text-secondary, #6b6b67); display: flex; align-items: center; gap: 4px; }
       .ldot  { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
       
       .pagto-side  { display: flex; align-items: center; gap: 14px; }
       .pagto-meta  { flex: 1; }
       .pagto-row   { margin-bottom: 8px; }
-      .pagto-lbl   { font-size: 9px; color: var(--text-bi3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+      .pagto-lbl   { font-size: 9px; color: var(--text-secondary, #a0a09c); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
       .pagto-val   { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-      .pagto-sub   { font-size: 10px; color: var(--text-bi3); }
+      .pagto-sub   { font-size: 10px; color: var(--text-secondary, #a0a09c); }
       
-      .stock-item, .nd-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border-bi); font-size: 11px; color: var(--text-primary); }
+      /* Linhas divisórias internas baseadas no token dinâmico */
+      .stock-item, .nd-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06)); font-size: 11px; color: var(--text-primary); }
       .stock-item:last-child, .nd-item:last-child { border-bottom: none; }
-      .sqty, .ndbadge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
-      .scrit   { background: var(--red-light-bi);   color: var(--red-bi); }
-      .slow    { background: var(--amber-light-bi); color: var(--amber-bi); }
-      .sok     { background: var(--green-light-bi); color: var(--green-bi); }
-      .ndbadge { background: var(--red-light-bi);   color: var(--red-bi); }
-      .nd-hint { margin-top: 8px; font-size: 10px; color: var(--text-bi3); }
       
+      .sqty, .ndbadge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+      .scrit   { background: rgba(220,38,38,0.1); color: #A32D2D; }
+      .slow    { background: rgba(245,158,11,0.1); color: #854F0B; }
+      .sok     { background: rgba(22,163,74,0.1); color: #3B6D11; }
+      .ndbadge { background: rgba(220,38,38,0.1); color: #A32D2D; }
+      .nd-hint { margin-top: 8px; font-size: 10px; color: var(--text-secondary, #a0a09c); }
+      
+      /* Rodapé de Insights adaptável para o Modo Escuro */
       .insights-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
-      .ins { border-radius: 8px; padding: 11px 13px; display: flex; align-items: flex-start; gap: 10px; }
+      .ins { border-radius: 8px; padding: 11px 13px; display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--border-color, rgba(0,0,0,0.04)); box-shadow: 0 1px 2px rgba(0,0,0,0.02); background: var(--bg-card, #ffffff); }
       .ins i { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
       .ins-text strong { display: block; font-size: 11px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
-      .ins-text span   { font-size: 10px; color: var(--text-secondary); line-height: 1.5; }
-      .i-amb { background: var(--amber-light-bi); }  .i-amb i { color: var(--amber-bi); }
-      .i-tea { background: var(--blue-light-bi); }   .i-tea i { color: var(--blue-bi); }
-      .i-grn { background: var(--green-light-bi); }  .i-grn i { color: var(--green-bi); }
+      .ins-text span   { font-size: 10px; color: var(--text-secondary, #6b6b67); line-height: 1.5; }
+      
+      /* Cores de fundo suavizadas nos insights para manter legibilidade nos dois temas */
+      .i-amb { background: var(--bg-hover, #FAEEDA); }  .i-amb i { color: #854F0B; }
+      .i-tea { background: var(--bg-hover, #E1F5EE); }  .i-tea i { color: #0F6E56; }
+      .i-grn { background: var(--bg-hover, #EAF3DE); }  .i-grn i { color: #3B6D11; }
     </style>
 </head>
 <body>
@@ -104,7 +103,7 @@
         <aside class="sidebar">
             <div>
                 <div class="logo-container">
-                    <i class="fas fa-burger logo-icon"></i>
+                    <i class="fas fa-burger logo-icon" style="width:34px;height:34px;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;"></i>
                     <div class="logo-text">
                         <h1>StockLanches</h1>
                         <p>SaaS v3.0</p>
@@ -144,10 +143,18 @@
                 <div class="topbar-date" style="font-size: 12px; padding: 6px 14px; background: var(--bg-hover); color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: 20px;"><i class="ti ti-refresh" style="font-size:11px;vertical-align:-1px;margin-right:4px"></i>Tempo real</div>
             </div>
 
-            <input type="hidden" id="data-lanches" th:value="${qtdLanches}">
-            <input type="hidden" id="data-bebidas" th:value="${qtdBebidas}">
-            <input type="hidden" id="data-sobremesas" th:value="${qtdSobremesas}">
-            <input type="hidden" id="data-acomp" th:value="${qtdAcomp}">
+            <input type="hidden" id="cat-vendas-nomes" th:value="${catVendasNomes}">
+            <input type="hidden" id="cat-vendas-qtds" th:value="${catVendasQtds}">
+            <input type="hidden" id="cat-lucro-nomes" th:value="${catLucroNomes}">
+            <input type="hidden" id="cat-lucro-qtds" th:value="${catLucroQtds}">
+            <input type="hidden" id="data-pix" th:value="${qtdPix}">
+            <input type="hidden" id="data-dinheiro" th:value="${qtdDinheiro}">
+            <input type="hidden" id="data-cartao" th:value="${qtdCartao}">
+            <input type="hidden" id="data-top-nomes" th:value="${top5Nomes}">
+            <input type="hidden" id="data-top-qtds" th:value="${top5Qtds}">
+            <input type="hidden" id="data-top-valores" th:value="${top5Valores}">
+            <input type="hidden" id="horas-pedidos" th:value="${horasPedidos}">
+            <input type="hidden" id="horas-faturamento" th:value="${horasFaturamento}">
 
             <div class="bi-container">
                 
@@ -155,22 +162,22 @@
                   <div class="kpi">
                     <div class="kpi-top"><i class="ti ti-currency-dollar kpi-icon" style="color:#185FA5"></i><span class="kpi-label">Faturamento do dia</span></div>
                     <div class="kpi-val" style="color:#185FA5;" th:text="'R$ ' + ${faturamentoDiario}">R$ 0</div>
-                    <span class="kpi-badge b-up"><i class="ti ti-trending-up" style="font-size:10px"></i> +12% vs ontem</span>
+                    <span class="kpi-badge b-neu">fluxo ativo</span>
                   </div>
                   <div class="kpi">
                     <div class="kpi-top"><i class="ti ti-receipt kpi-icon" style="color:#3B6D11"></i><span class="kpi-label">Número de pedidos</span></div>
                     <div class="kpi-val" style="color:#3B6D11;" th:text="${numeroPedidos}">0</div>
-                    <span class="kpi-badge b-neu">fluxo de caixa ativo</span>
+                    <span class="kpi-badge b-neu">caixa aberto</span>
                   </div>
                   <div class="kpi">
                     <div class="kpi-top"><i class="ti ti-shopping-cart kpi-icon" style="color:#854F0B"></i><span class="kpi-label">Ticket médio</span></div>
                     <div class="kpi-val" style="color:#854F0B;" th:text="'R$ ' + ${ticketMedio}">R$ 0,00</div>
-                    <span class="kpi-badge b-down"><i class="ti ti-trending-down" style="font-size:10px"></i> -8% vs ontem</span>
+                    <span class="kpi-badge b-neu">por cliente</span>
                   </div>
                   <div class="kpi">
                     <div class="kpi-top"><i class="ti ti-chart-line kpi-icon" style="color:#3C3489"></i><span class="kpi-label">Lucro estimado (32%)</span></div>
                     <div class="kpi-val" style="color:#3C3489;" th:text="'R$ ' + ${lucroEstimado}">R$ 0</div>
-                    <span class="kpi-badge b-pur">líquido operacional</span>
+                    <span class="kpi-badge b-pur">operacional</span>
                   </div>
                 </div>
 
@@ -190,18 +197,18 @@
                       <div class="pagto-meta">
                         <div class="pagto-row">
                           <div class="pagto-lbl">Cartão</div>
-                          <div class="pagto-val">R$ 861</div>
-                          <div class="pagto-sub">67% — taxas: ~R$ 26</div>
+                          <div class="pagto-val" id="lbl-val-cartao">R$ 0</div>
+                          <div class="pagto-sub" id="lbl-pct-cartao">0%</div>
                         </div>
                         <div class="pagto-row">
                           <div class="pagto-lbl">Pix</div>
-                          <div class="pagto-val">R$ 424</div>
-                          <div class="pagto-sub">33% — sem taxas</div>
+                          <div class="pagto-val" id="lbl-val-pix">R$ 0</div>
+                          <div class="pagto-sub" id="lbl-pct-pix">0%</div>
                         </div>
                         <div class="pagto-row">
                           <div class="pagto-lbl">Dinheiro</div>
-                          <div class="pagto-val">R$ 0</div>
-                          <div class="pagto-sub">0%</div>
+                          <div class="pagto-val" id="lbl-val-dinheiro">R$ 0</div>
+                          <div class="pagto-sub" id="lbl-pct-dinheiro">0%</div>
                         </div>
                       </div>
                     </div>
@@ -218,39 +225,61 @@
                     <div style="position:relative;height:190px;"><canvas id="prodChart"></canvas></div>
                   </div>
                   <div class="bi-card">
-                    <div class="bi-card-title"><i class="ti ti-tag"></i> vendas por categoria</div>
+                    <div class="bi-card-title"><i class="ti ti-tag"></i> vendas por categoria (Top 5 + Outros)</div>
                     <div style="position:relative;height:190px;"><canvas id="catChart"></canvas></div>
                   </div>
                 </div>
 
                 <div class="bi-row3">
+                  
                   <div class="bi-card">
                     <div class="bi-card-title"><i class="ti ti-alert-triangle"></i> estoque baixo</div>
-                    <div class="stock-item"><span>Pão brioche</span><span class="sqty scrit">5 un</span></div>
-                    <div class="stock-item"><span>Cheddar fatiado</span><span class="sqty scrit">2 un</span></div>
-                    <div class="stock-item"><span>Bacon defumado</span><span class="sqty slow">12 un</span></div>
-                    <div class="stock-item"><span>Hambúrguer 180g</span><span class="sqty slow">18 un</span></div>
-                    <div class="stock-item"><span>Alertas Gerais</span><span class="sqty sok" th:text="${produtosBaixoEstoque} + ' crítico(s)'">0 un</span></div>
+                    
+                    <div th:each="insumo : ${insumosCriticos}" class="stock-item">
+                        <span th:text="${insumo.nome}">Nome do Insumo</span>
+                        <span class="sqty scrit" th:text="${insumo.qtdAtual} + ' un'">0 un</span>
+                    </div>
+                    
+                    <div th:if="${#lists.isEmpty(insumosCriticos)}" class="stock-item" style="border:none; justify-content:center; color:var(--text-secondary); font-style:italic; padding:15px 0;">
+                        Nenhum insumo crítico operando em alerta.
+                    </div>
+                    
+                    <div class="stock-item" style="border-top: 1px solid var(--border-color); margin-top: 8px; padding-top: 8px; font-weight: 600;">
+                        <span>Insumos em Alerta</span>
+                        <span class="sqty slow" th:text="${produtosBaixoEstoque} + ' itens'">0 itens</span>
+                    </div>
                   </div>
+
                   <div class="bi-card">
                     <div class="bi-card-title"><i class="ti ti-ban"></i> produtos sem demanda</div>
-                    <div class="nd-item"><span>Hot Dog Especial</span><span class="ndbadge">0 vendas</span></div>
-                    <div class="nd-item"><span>Produto Encalhado</span><span class="ndbadge" th:text="${produtoEncalhado}">Nenhum</span></div>
-                    <p class="nd-hint">Sugestão: crie promoções ou reduza as compras destes itens.</p>
+                    
+                    <div th:each="prodSem : ${produtosSemDemanda}" class="nd-item">
+                        <span th:text="${prodSem.nome}">Nome do Produto</span>
+                        <span class="ndbadge">0 vendas</span>
+                    </div>
+                    
+                    <div th:if="${#lists.isEmpty(produtosSemDemanda)}" class="nd-item" style="border:none; justify-content:center; color:var(--text-secondary); font-style:italic; padding:15px 0;">
+                        Todos os produtos registram giro no PDV.
+                    </div>
+                    
+                    <p class="nd-hint" style="margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px;">Sugestão: reduza as ordens de compra deste item.</p>
                   </div>
+
                   <div class="bi-card">
                     <div class="bi-card-title"><i class="ti ti-star"></i> categoria mais lucrativa</div>
                     <div style="position:relative;height:150px;"><canvas id="lucroChart"></canvas></div>
                   </div>
+                  
                 </div>
 
                 <div class="insights-row">
-                  <div class="ins i-amb"><i class="ti ti-clock"></i><div class="ins-text"><strong>Pico: 19h às 21h</strong><span>Intervalo mais ativo.</span></div></div>
-                  <div class="ins i-tea"><i class="ti ti-trending-up"></i><div class="ins-text"><strong>Pix cresceu +18%</strong><span>Promova o QR Code.</span></div></div>
-                  <div class="ins i-grn"><i class="ti ti-calendar"></i><div class="ins-text"><strong>Melhor dia: sexta-feira</strong><span>Ticket médio alto.</span></div></div>
+                  <div class="ins i-amb"><i class="ti ti-clock"></i><div class="ins-text"><strong>Pico Operacional Histórico</strong><span id="txt-insight-hora">Carregando dados...</span></div></div>
+                  <div class="ins i-tea"><i class="ti ti-trending-up"></i><div class="ins-text"><strong>Preferência Comercial</strong><span id="txt-insight-pix">Carregando dados...</span></div></div>
+                  <div class="ins i-grn"><i class="ti ti-calendar"></i><div class="ins-text"><strong>Melhor Dia da Semana</strong><span id="txt-insight-dia">Carregando dados...</span></div></div>
                 </div>
 
-            </div></main>
+            </div>
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

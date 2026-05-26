@@ -58,6 +58,10 @@ public class ProdutoController {
         if (!isUserLogged()) return "redirect:/login";
         setupModel(model, "produtos");
         model.addAttribute("produtos", produtoService.listarTodosEntity());
+        
+        // 🟢 ADICIONE ESTA LINHA: Puxa todos os insumos do estoque para a Combobox
+        model.addAttribute("insumosEstoque", estoqueRepository.findAll()); 
+        
         return "produtos";
     }
     
